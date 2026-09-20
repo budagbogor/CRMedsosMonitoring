@@ -26,19 +26,23 @@ app.use((req, res, next) => {
   next();
 });
 
-// Cloud PostgreSQL Connection Pool (Sumobase) - Lazy Loaded
+// Cloud PostgreSQL Connection Pool (Sumobase) - Lazy Loaded & Crash-Safe
 let _pgPool: pg.Pool | null = null;
 
-function getPgPool(): pg.Pool {
+function getPgPool(): pg.Pool | null {
   if (!_pgPool) {
-    const connectionString = process.env.DATABASE_URL || "postgresql://u2H8cz2EvssDm933X.jkt_001:ebb7d1b90d613b7d81198045@pgsql-dbas-jkt-001.sumobase.my.id:6432/dba994b0079ab7edb1";
-    const useSsl = process.env.DATABASE_SSL === "true";
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      return null; // No DB configured — skip silently
+    }
+    const isVercel = process.env.VERCEL === "1";
+    const useSsl = process.env.DATABASE_SSL === "true" || isVercel;
     _pgPool = new Pool({
       connectionString,
       ssl: useSsl ? { rejectUnauthorized: false } : false,
-      connectionTimeoutMillis: 5000,
-      idleTimeoutMillis: 30000,
-      max: 10,
+      connectionTimeoutMillis: isVercel ? 3000 : 5000,
+      idleTimeoutMillis: isVercel ? 10000 : 30000,
+      max: isVercel ? 3 : 10,
     });
     _pgPool.on("error", (err) => {
       console.warn("⚠️ Peringatan koneksi PostgreSQL pool idle:", err?.message || String(err));
@@ -90,8 +94,10 @@ function saveBranchReviewsToLocalDB(branchName: string, reviews: any[], fetchedA
 async function saveBranchReviewsToDB(branchName: string, reviews: any[], fetchedAt: string) {
   saveBranchReviewsToLocalDB(branchName, reviews, fetchedAt);
 
+  const pool = getPgPool();
+  if (!pool) return; // No DB configured
   try {
-    await getPgPool().query(`
+    await pool.query(`
       INSERT INTO branch_reviews (branch_name, reviews, fetched_at, last_sync)
       VALUES ($1, $2, $3, NOW())
       ON CONFLICT (branch_name)
@@ -104,24 +110,27 @@ async function saveBranchReviewsToDB(branchName: string, reviews: any[], fetched
 }
 
 async function getBranchReviewsFromDB(branchName: string) {
-  try {
-    const res = await getPgPool().query(
-      `SELECT reviews, fetched_at FROM branch_reviews WHERE branch_name = $1`,
-      [branchName]
-    );
-    if (res.rows.length > 0) {
-      const row = res.rows[0];
-      const reviews = typeof row.reviews === 'string' ? JSON.parse(row.reviews) : row.reviews;
-      if (Array.isArray(reviews) && reviews.length > 0) {
-        return {
-          reviews,
-          fetchedAt: row.fetched_at || null,
-          source: "sumobase_postgresql_cloud",
-        };
+  const pool = getPgPool();
+  if (pool) {
+    try {
+      const res = await pool.query(
+        `SELECT reviews, fetched_at FROM branch_reviews WHERE branch_name = $1`,
+        [branchName]
+      );
+      if (res.rows.length > 0) {
+        const row = res.rows[0];
+        const reviews = typeof row.reviews === 'string' ? JSON.parse(row.reviews) : row.reviews;
+        if (Array.isArray(reviews) && reviews.length > 0) {
+          return {
+            reviews,
+            fetchedAt: row.fetched_at || null,
+            source: "sumobase_postgresql_cloud",
+          };
+        }
       }
+    } catch (err: any) {
+      console.warn("Gagal membaca dari Cloud PostgreSQL Sumobase, mencoba fallback lokal:", err?.message);
     }
-  } catch (err: any) {
-    console.warn("Gagal membaca dari Cloud PostgreSQL Sumobase, mencoba fallback Drive G:", err?.message);
   }
 
   const db = getLocalDatabase();
@@ -142,8 +151,13 @@ let isDbInitialized = false;
 
 async function initPostgresDB() {
   if (isDbInitialized) return;
+  const pool = getPgPool();
+  if (!pool) {
+    console.warn("  ⚠️ DATABASE_URL tidak dikonfigurasi — Cloud PostgreSQL dilewati.");
+    return;
+  }
   try {
-    const client = await getPgPool().connect();
+    const client = await pool.connect();
     try {
       await client.query(`
         CREATE TABLE IF NOT EXISTS branch_reviews (
