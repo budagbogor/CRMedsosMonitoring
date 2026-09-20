@@ -142,7 +142,7 @@ export default function App() {
     progressPercent: 0,
   });
 
-  const presetList = ["Mobeng", "B-Quik", "Bengkel BOS", "Astra Otoservice", "Shop & Drive"];
+  const presetList = ["Mobeng"];
 
   const handleSaveAIConfig = (newConfig: AIConfig) => {
     setAiConfig(newConfig);
