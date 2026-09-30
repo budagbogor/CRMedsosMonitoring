@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-30T06:46:34.653Z",
+  "lastUpdated": "2026-09-30T07:15:01.812Z",
   "branches": {
     "Mobeng Brigjen Katamso": {
       "reviews": [
@@ -200,9 +200,34 @@
       "lastSync": "2026-09-30T06:25:31.120Z"
     },
     "Mobeng Cipondoh": {
-      "reviews": [],
-      "fetchedAt": "2026-09-30T06:46:34.652Z",
-      "lastSync": "2026-09-30T06:46:34.653Z"
+      "reviews": [
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T07:15:01.811Z",
+          "text": "Kesini karena mau ganti ban belakang yang udh mulai botak. Kebetulan lagi ada promo trade in ban lama ke ban baru.\nRuang tunggu nyaman dan disediakan kopi dan teh. …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T07:15:01.811Z",
+          "text": "Sudah Dua Kali servis disini, harga bersahabat Dan kualitasnya terbaik, ruang tunggu nyaman ber AC Dan ada free welcome drink, jangan ragu untuk servis disini.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T07:15:01.811Z",
+          "text": "Penyelamat! Pas hujan, sore,wiper mati, bengkel sebelumnya nolak, kalau ini langsung ngerjain dengan sepenuh hati huhu terharu bgt bgt",
+          "sentiment": "neutral",
+          "tags": []
+        }
+      ],
+      "fetchedAt": "2026-09-30T07:15:01.811Z",
+      "lastSync": "2026-09-30T07:15:01.812Z"
     },
     "Mobeng Pondok Betung": {
       "reviews": [

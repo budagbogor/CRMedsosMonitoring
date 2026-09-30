@@ -343,6 +343,128 @@ app.post(["/api/send-email", "/send-email"], async (req, res) => {
   }
 });
 
+// Helper function to extract reviews, rating, and total count using Puppeteer
+async function scrapeGoogleMapsReviews(page: any) {
+  // First, extract overall rating and total review count from the overview page
+  const metaData = await page.evaluate(() => {
+    let overallRating = 0;
+    let totalReviewCount = 0;
+    try {
+      const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+      if (ratingEl) {
+        const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+        if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+      }
+      
+      const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+      if (countEl) {
+        const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+        if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
+      }
+
+      if (!overallRating || !totalReviewCount) {
+        const mainText = document.body.innerText;
+        const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+        if (match) {
+          if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
+          if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+        }
+      }
+    } catch (e) {}
+    return { overallRating, totalReviewCount };
+  });
+
+  // Now try to navigate to Reviews tab and sort by lowest to find complaints
+  const clickedTab = await page.evaluate(() => {
+    const buttons = Array.from(document.querySelectorAll('button'));
+    const b = buttons.find(b => b.innerText && (b.innerText.includes('Reviews') || b.innerText.includes('Ulasan') || b.innerText.includes('ulasan')));
+    if (b) { b.click(); return true; }
+    return false;
+  });
+  
+  if (clickedTab) {
+    await new Promise(r => setTimeout(r, 2000));
+    
+    // Look for Sort button
+    const clickedSort = await page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll('button'));
+      const b = buttons.find(b => b.innerText && (b.innerText.includes('Urutkan') || b.innerText.includes('Sort')));
+      if (b) { b.click(); return true; }
+      return false;
+    });
+    
+    if (clickedSort) {
+      await new Promise(r => setTimeout(r, 1000));
+      
+      // Click Lowest rating
+      await page.evaluate(() => {
+        const menuItems = Array.from(document.querySelectorAll('div[data-index]'));
+        const lowest = menuItems.find(el => el.innerText && (el.innerText.includes('Lowest') || el.innerText.includes('terendah')));
+        if (lowest) {
+          lowest.click();
+        } else {
+          const fallback = menuItems.find(el => el.getAttribute('data-index') === '2');
+          if (fallback) fallback.click();
+        }
+      });
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+
+  // Extract reviews
+  const reviews = await page.evaluate(() => {
+    const reviewTexts = document.querySelectorAll('.wiI7pd');
+    const reviewsArr: any[] = [];
+    reviewTexts.forEach(textEl => {
+      let container = textEl.parentElement;
+      for (let i = 0; i < 5; i++) {
+        if (container && container.parentElement) container = container.parentElement;
+      }
+      
+      let author = "Google User (Scraped)";
+      let date = new Date().toISOString();
+      let rating = 0;
+      
+      if (container) {
+        const allSpans = container.querySelectorAll('span, div');
+        for (const el of allSpans) {
+          const text = (el as HTMLElement).innerText || '';
+          if (text.includes('lalu') || text.includes('ago') || text.includes('hari') || text.includes('bulan') || text.includes('tahun')) {
+            if (text.length > 3 && text.length < 20) date = text;
+          }
+          if (el.getAttribute('aria-label') && (el.getAttribute('aria-label')!.includes('bintang') || el.getAttribute('aria-label')!.includes('stars'))) {
+            const m = el.getAttribute('aria-label')!.match(/([1-5])/);
+            if (m && !rating) rating = parseInt(m[1]);
+          }
+        }
+        
+        const img = container.querySelector('img');
+        if (img && img.alt) {
+          author = img.alt;
+        } else {
+          const btn = container.querySelector('button');
+          if (btn && btn.innerText && btn.innerText.length > 2) author = btn.innerText.split('\n')[0];
+        }
+      }
+      
+      // Only return negative reviews (rating 1-3) since user wants complaints
+      if (rating > 0 && rating <= 3) {
+        reviewsArr.push({
+          author,
+          rating,
+          date,
+          text: (textEl as HTMLElement).innerText,
+          sentiment: "negative",
+          tags: []
+        });
+      }
+    });
+    return reviewsArr;
+  });
+
+  return { reviews, overallRating: metaData.overallRating, totalReviewCount: metaData.totalReviewCount };
+}
+
 // API Scrape Google Maps Reviews (Gratis via Puppeteer)
 app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, res) => {
   const { url } = req.body;
@@ -371,49 +493,7 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
       console.log('Timeout waiting for .wiI7pd selector. The page structure might be different atau tidak ada review.');
     }
 
-    // Extract review texts, rating, and review count
-    const extractedData = await page.evaluate(() => {
-      // Common class name for Google Maps review text
-      const reviewElements = document.querySelectorAll('.wiI7pd');
-      const reviews: any[] = [];
-      reviewElements.forEach((el) => {
-        if (el.textContent && el.textContent.trim().length > 0) {
-          reviews.push({ text: el.textContent.trim() });
-        }
-      });
-
-      // Try to extract overall rating and review count from the page
-      let overallRating = 0;
-      let totalReviewCount = 0;
-      
-      try {
-        // Find rating via aria-label
-        const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
-        if (ratingEl) {
-          const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
-          if (m) overallRating = parseFloat(m[1].replace(',', '.'));
-        }
-        
-        // Find review count via aria-label
-        const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
-        if (countEl) {
-          const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
-          if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
-        }
-
-        // Fallback to text matching if not found
-        if (!overallRating || !totalReviewCount) {
-          const mainText = document.body.innerText;
-          const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
-          if (match) {
-            if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
-            if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
-          }
-        }
-      } catch (e) {}
-
-      return { reviews, overallRating, totalReviewCount };
-    });
+    const extractedData = await scrapeGoogleMapsReviews(page);
 
     const reviews = extractedData.reviews;
     const overallRating = extractedData.overallRating;
@@ -425,16 +505,8 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
     const { branchName } = req.body;
     let savedCount = 0;
     if (branchName && (reviews.length > 0 || totalReviewCount > 0)) {
-      const formattedReviews = reviews.map(r => ({
-        author: "Google User (Scraped)",
-        rating: 0,
-        date: new Date().toISOString(),
-        text: r.text,
-        sentiment: "neutral",
-        tags: []
-      }));
-      await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), overallRating, totalReviewCount);
-      savedCount = formattedReviews.length;
+      await saveBranchReviewsToDB(branchName, reviews, new Date().toISOString(), overallRating, totalReviewCount);
+      savedCount = reviews.length;
     }
 
     res.json({
@@ -503,55 +575,8 @@ app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (
                 console.log(`[Bulk Scrape] ${branchName}: Timeout menunggu .wiI7pd`);
               }
 
-              const extractedData = await page.evaluate(() => {
-                const reviewElements = document.querySelectorAll('.wiI7pd');
-                const reviews: any[] = [];
-                reviewElements.forEach((el) => {
-                  if (el.textContent && el.textContent.trim().length > 0) {
-                    reviews.push({ text: el.textContent.trim() });
-                  }
-                });
-
-                let overallRating = 0;
-                let totalReviewCount = 0;
-                try {
-                  // Find rating via aria-label
-                  const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
-                  if (ratingEl) {
-                    const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
-                    if (m) overallRating = parseFloat(m[1].replace(',', '.'));
-                  }
-                  
-                  // Find review count via aria-label
-                  const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
-                  if (countEl) {
-                    const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
-                    if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
-                  }
-
-                  // Fallback to text matching if not found
-                  if (!overallRating || !totalReviewCount) {
-                    const mainText = document.body.innerText;
-                    const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
-                    if (match) {
-                      if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
-                      if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
-                    }
-                  }
-                } catch (e) {}
-
-                return { reviews, overallRating, totalReviewCount };
-              });
-
-              // Format reviews for Database
-              const formattedReviews = extractedData.reviews.map(r => ({
-                author: "Google User (Scraped)",
-                rating: 0,
-                date: new Date().toISOString(),
-                text: r.text,
-                sentiment: "neutral",
-                tags: []
-              }));
+              const extractedData = await scrapeGoogleMapsReviews(page);
+              const formattedReviews = extractedData.reviews;
 
               if (formattedReviews.length > 0 || extractedData.totalReviewCount > 0) {
                 await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
