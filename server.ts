@@ -364,22 +364,140 @@ app.post(["/api/send-email", "/send-email"], async (req, res) => {
   }
 });
 
+// Helper to convert relative date strings (e.g. "2 bulan lalu", "3 days ago") to real ISO timestamps
+function parseRelativeDate(text: string): string {
+  if (!text) return new Date().toISOString();
+  const lower = text.toLowerCase().trim();
+  const now = new Date();
+
+  const dayMatch = lower.match(/(\d+)\s*(?:hari|day|days)/);
+  if (dayMatch) {
+    now.setDate(now.getDate() - parseInt(dayMatch[1], 10));
+    return now.toISOString();
+  }
+
+  if (lower.includes('kemarin') || lower.includes('yesterday') || lower.includes('sehari') || lower.includes('1 hari')) {
+    now.setDate(now.getDate() - 1);
+    return now.toISOString();
+  }
+
+  const weekMatch = lower.match(/(\d+)\s*(?:minggu|week|weeks)/);
+  if (weekMatch) {
+    now.setDate(now.getDate() - parseInt(weekMatch[1], 10) * 7);
+    return now.toISOString();
+  }
+  if (lower.includes('seminggu') || lower.includes('a week')) {
+    now.setDate(now.getDate() - 7);
+    return now.toISOString();
+  }
+
+  const monthMatch = lower.match(/(\d+)\s*(?:bulan|month|months)/);
+  if (monthMatch) {
+    now.setMonth(now.getMonth() - parseInt(monthMatch[1], 10));
+    return now.toISOString();
+  }
+  if (lower.includes('sebulan') || lower.includes('a month')) {
+    now.setMonth(now.getMonth() - 1);
+    return now.toISOString();
+  }
+
+  const yearMatch = lower.match(/(\d+)\s*(?:tahun|year|years)/);
+  if (yearMatch) {
+    now.setFullYear(now.getFullYear() - parseInt(yearMatch[1], 10));
+    return now.toISOString();
+  }
+  if (lower.includes('setahun') || lower.includes('a year')) {
+    now.setFullYear(now.getFullYear() - 1);
+    return now.toISOString();
+  }
+
+  return now.toISOString();
+}
+
 // Helper function to extract reviews, rating, and total count using Puppeteer
 async function scrapeGoogleMapsReviews(page: any) {
-  // First, extract overall rating and total review count from the overview page
+  const interceptedReviews: any[] = [];
+  const isOwnerText = (t: string) => /Response from the owner|Tanggapan dari pemilik|Respon dari pemilik|Balasan dari pemilik|Owner response/i.test(t);
+
+  // 1. Setup Network Response Interception for Google Maps RPC endpoints
+  page.on('response', async (response: any) => {
+    try {
+      const url = response.url();
+      if (url.includes('listentitiesreviews') || url.includes('batchexecute') || url.includes('listugcposts')) {
+        const text = await response.text();
+        const cleaned = text.replace(/^\)\]\}'/, '').trim();
+        if (cleaned.startsWith('[')) {
+          const parsed = JSON.parse(cleaned);
+          // Recursively find review-like arrays in Google's internal nested response format
+          const findReviews = (obj: any) => {
+            if (!obj || typeof obj !== 'object') return;
+            if (Array.isArray(obj)) {
+              // Characteristic of a Google review item in RPC: array with text, rating number, author array
+              if (obj.length >= 4 && typeof obj[3] === 'string' && obj[3].length > 0 && typeof obj[4] === 'number' && obj[4] >= 1 && obj[4] <= 5) {
+                const authorName = (obj[0] && Array.isArray(obj[0]) && typeof obj[0][1] === 'string') ? obj[0][1] : "Pengguna Google";
+                const rating = obj[4];
+                const reviewText = obj[3];
+                let dateIso = new Date().toISOString();
+                let ownerReply: string | undefined = undefined;
+
+                // Look for owner reply sub-arrays
+                for (let i = 5; i < obj.length; i++) {
+                  if (Array.isArray(obj[i]) && obj[i].length >= 2 && typeof obj[i][1] === 'string' && obj[i][1].length > 5) {
+                    ownerReply = obj[i][1];
+                    break;
+                  }
+                }
+                
+                // Check if timestamp exists in microseconds/milliseconds
+                if (typeof obj[1] === 'string') {
+                  dateIso = parseRelativeDate(obj[1]);
+                } else if (typeof obj[14] === 'number' && obj[14] > 1000000000) {
+                  const ms = obj[14] > 1000000000000 ? obj[14] : obj[14] * 1000;
+                  dateIso = new Date(ms).toISOString();
+                }
+
+                // Strictly filter: only ratings 1-3 (complaints) and NEVER owner response text
+                if (rating >= 1 && rating <= 3 && !isOwnerText(reviewText) && !isOwnerText(authorName)) {
+                  interceptedReviews.push({
+                    author: authorName,
+                    rating,
+                    date: dateIso,
+                    text: reviewText,
+                    ownerReply,
+                    sentiment: "negative",
+                    tags: []
+                  });
+                }
+                return; // Do not recurse deeper inside this review to avoid grabbing reply as review
+              }
+              for (const item of obj) findReviews(item);
+            }
+          };
+          findReviews(parsed);
+        }
+      }
+    } catch (e) {
+      // Ignore network parse hiccups
+    }
+  });
+
+  // 2. Extract overall rating & total review count from Overview tab
   const metaData = await page.evaluate(() => {
     let overallRating = 0;
     let totalReviewCount = 0;
     try {
-      const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+      // Search for rating numbers e.g. "4.2" or "4,2"
+      const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"], div.F7nice span[aria-hidden="true"]');
       if (ratingEl) {
-        const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+        const text = ratingEl.getAttribute('aria-label') || (ratingEl as HTMLElement).innerText || '';
+        const m = text.match(/([1-5][.,][0-9])/);
         if (m) overallRating = parseFloat(m[1].replace(',', '.'));
       }
       
-      const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+      const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"], span.EH3ocb');
       if (countEl) {
-        const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+        const text = countEl.getAttribute('aria-label') || (countEl as HTMLElement).innerText || '';
+        const m = text.match(/([\d,.]+)/);
         if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
       }
 
@@ -395,95 +513,182 @@ async function scrapeGoogleMapsReviews(page: any) {
     return { overallRating, totalReviewCount };
   });
 
-  // Now try to navigate to Reviews tab and sort by lowest to find complaints
-  const clickedTab = await page.evaluate(() => {
-    const buttons = Array.from(document.querySelectorAll('button'));
-    const b = buttons.find(b => b.innerText && (b.innerText.includes('Reviews') || b.innerText.includes('Ulasan') || b.innerText.includes('ulasan')));
-    if (b) { b.click(); return true; }
-    return false;
-  });
-  
-  if (clickedTab) {
-    await new Promise(r => setTimeout(r, 2000));
-    
-    // Look for Sort button
-    const clickedSort = await page.evaluate(() => {
-      const buttons = Array.from(document.querySelectorAll('button'));
-      const b = buttons.find(b => b.innerText && (b.innerText.includes('Urutkan') || b.innerText.includes('Sort')));
-      if (b) { b.click(); return true; }
-      return false;
-    });
-    
-    if (clickedSort) {
-      await new Promise(r => setTimeout(r, 1000));
-      
-      // Click Lowest rating
-      await page.evaluate(() => {
-        const menuItems = Array.from(document.querySelectorAll('div[data-index]'));
-        const lowest = menuItems.find(el => el.innerText && (el.innerText.includes('Lowest') || el.innerText.includes('terendah')));
-        if (lowest) {
-          lowest.click();
-        } else {
-          const fallback = menuItems.find(el => el.getAttribute('data-index') === '2');
-          if (fallback) fallback.click();
-        }
-      });
-      await new Promise(r => setTimeout(r, 2000));
+  // 3. Robust Tab Switching to "Ulasan" / "Reviews"
+  await page.evaluate(() => {
+    const tabs = Array.from(document.querySelectorAll('button[role="tab"], button[data-tab-index], button'));
+    for (const tab of tabs) {
+      const txt = (tab as HTMLElement).innerText || tab.getAttribute('aria-label') || '';
+      if (/ulasan|reviews/i.test(txt)) {
+        (tab as HTMLElement).click();
+        break;
+      }
     }
-  }
+  });
 
-  // Extract reviews
-  const reviews = await page.evaluate(() => {
-    const reviewTexts = document.querySelectorAll('.wiI7pd');
-    const reviewsArr: any[] = [];
-    reviewTexts.forEach(textEl => {
-      let container = textEl.parentElement;
-      for (let i = 0; i < 5; i++) {
-        if (container && container.parentElement) container = container.parentElement;
+  await new Promise(r => setTimeout(r, 2000));
+
+  // 4. Click Sort Button (Urutkan) & Select Lowest Rating (Rating Terendah)
+  await page.evaluate(() => {
+    const buttons = Array.from(document.querySelectorAll('button'));
+    const sortBtn = buttons.find(b => {
+      const txt = b.innerText || b.getAttribute('aria-label') || '';
+      return /urutkan|sort/i.test(txt);
+    });
+    if (sortBtn) sortBtn.click();
+  });
+
+  await new Promise(r => setTimeout(r, 1200));
+
+  await page.evaluate(() => {
+    const menuItems = Array.from(document.querySelectorAll('div[data-index], div[role="menuitemradio"], div[role="menuitem"]'));
+    const lowest = menuItems.find(el => {
+      const txt = (el as HTMLElement).innerText || el.getAttribute('aria-label') || '';
+      return /terendah|lowest/i.test(txt);
+    });
+    if (lowest) {
+      (lowest as HTMLElement).click();
+    } else {
+      const fallback = menuItems.find(el => el.getAttribute('data-index') === '2');
+      if (fallback) (fallback as HTMLElement).click();
+    }
+  });
+
+  await new Promise(r => setTimeout(r, 2000));
+
+  // 5. Expand truncated reviews by clicking all "Lainnya" / "More" buttons
+  await page.evaluate(() => {
+    const moreButtons = Array.from(document.querySelectorAll('button[aria-label*="Lainnya"], button[aria-label*="More"], button.w8nwRe, button.kyuRq'));
+    moreButtons.forEach(btn => {
+      try { (btn as HTMLElement).click(); } catch (e) {}
+    });
+  });
+
+  // 6. Scroll review feed container to trigger lazy loading
+  await page.evaluate(async () => {
+    const scrollContainer = document.querySelector('.m6QErb.DxyBCb, div[role="main"], div.m6QErb') || window;
+    for (let i = 0; i < 3; i++) {
+      if (scrollContainer === window) {
+        window.scrollBy(0, 800);
+      } else {
+        (scrollContainer as HTMLElement).scrollTop += 800;
       }
-      
-      let author = "Google User (Scraped)";
-      let date = new Date().toISOString();
+      await new Promise(res => setTimeout(res, 800));
+    }
+  });
+
+  await new Promise(r => setTimeout(r, 1500));
+
+  // 7. Scrape reviews from DOM
+  const domReviews = await page.evaluate(() => {
+    const rawItems: any[] = [];
+    const isOwnerHeader = (t: string) => /Response from the owner|Tanggapan dari pemilik|Respon dari pemilik|Balasan dari pemilik|Owner response/i.test(t);
+    const reviewCards = Array.from(document.querySelectorAll('div.jftiEf, div[data-review-id], div.gWsLMe, div.WNxPn'));
+    
+    reviewCards.forEach(card => {
+      let author = "Pengguna Google";
+      let dateRaw = "";
       let rating = 0;
-      
-      if (container) {
-        const allSpans = container.querySelectorAll('span, div');
-        for (const el of allSpans) {
-          const text = (el as HTMLElement).innerText || '';
-          if (text.includes('lalu') || text.includes('ago') || text.includes('hari') || text.includes('bulan') || text.includes('tahun')) {
-            if (text.length > 3 && text.length < 20) date = text;
-          }
-          if (el.getAttribute('aria-label') && (el.getAttribute('aria-label')!.includes('bintang') || el.getAttribute('aria-label')!.includes('stars'))) {
-            const m = el.getAttribute('aria-label')!.match(/([1-5])/);
-            if (m && !rating) rating = parseInt(m[1]);
-          }
-        }
-        
-        const img = container.querySelector('img');
-        if (img && img.alt) {
-          author = img.alt;
-        } else {
-          const btn = container.querySelector('button');
-          if (btn && btn.innerText && btn.innerText.length > 2) author = btn.innerText.split('\n')[0];
+      let text = "";
+      let ownerReply = "";
+
+      // Check for owner reply container inside this review card
+      const ownerContainer = Array.from(card.querySelectorAll('div, section, .CDe7pd')).find(el => {
+        const t = (el as HTMLElement).innerText || '';
+        return isOwnerHeader(t);
+      });
+
+      if (ownerContainer) {
+        let replyTxt = (ownerContainer as HTMLElement).innerText || '';
+        replyTxt = replyTxt
+          .replace(/^Response from the owner[^\n]*\n?/i, '')
+          .replace(/^Tanggapan dari pemilik[^\n]*\n?/i, '')
+          .replace(/^Respon dari pemilik[^\n]*\n?/i, '')
+          .replace(/^Balasan dari pemilik[^\n]*\n?/i, '')
+          .replace(/^Owner response[^\n]*\n?/i, '')
+          .trim();
+        ownerReply = replyTxt;
+      }
+
+      // Extract author
+      const authorEl = card.querySelector('.d4r55, button.alPumb, .WNxFfe, div[class*="author"], img[alt]');
+      if (authorEl) {
+        if (authorEl.getAttribute('alt')) author = authorEl.getAttribute('alt')!;
+        else author = (authorEl as HTMLElement).innerText || author;
+      }
+
+      // Extract rating (customer star rating ONLY)
+      const ratingEl = card.querySelector('span.kvMYJc[aria-label], span[aria-label*="bintang"], span[aria-label*="stars"], span[role="img"]');
+      if (ratingEl) {
+        const aria = ratingEl.getAttribute('aria-label') || '';
+        const m = aria.match(/([1-5])/);
+        if (m) rating = parseInt(m[1], 10);
+      }
+
+      // Extract relative date text
+      const dateEl = card.querySelector('span.rsqaWe, span[class*="date"], span[class*="time"], span.dehNs');
+      if (dateEl) {
+        dateRaw = (dateEl as HTMLElement).innerText || '';
+      }
+
+      // Extract customer review text (EXCLUDE any text inside ownerContainer)
+      const textElements = Array.from(card.querySelectorAll('.wiI7pd, .MyEned, span.raw_text, div[class*="review-text"]'));
+      for (const el of textElements) {
+        if (ownerContainer && ownerContainer.contains(el)) continue;
+        const candidate = (el as HTMLElement).innerText || '';
+        if (isOwnerHeader(candidate)) continue;
+        if (candidate.trim().length > 0) {
+          text = candidate.trim();
+          break;
         }
       }
-      
-      // Only return negative reviews (rating 1-3) since user wants complaints
-      if (rating > 0 && rating <= 3) {
-        reviewsArr.push({
-          author,
+
+      // Strict validation:
+      // Must have rating between 1 and 3 stars (1, 2, or 3)
+      // Text must not be empty and must not be owner response
+      if (rating >= 1 && rating <= 3 && text.length > 0 && !isOwnerHeader(text) && !isOwnerHeader(author)) {
+        rawItems.push({
+          author: author.split('\n')[0].trim(),
           rating,
-          date,
-          text: (textEl as HTMLElement).innerText,
+          dateRaw: dateRaw.trim(),
+          text: text.trim(),
+          ownerReply: ownerReply || undefined,
           sentiment: "negative",
           tags: []
         });
       }
     });
-    return reviewsArr;
+
+    return rawItems;
   });
 
-  return { reviews, overallRating: metaData.overallRating, totalReviewCount: metaData.totalReviewCount };
+  // Convert raw date strings in DOM reviews to real ISO timestamps
+  const parsedDomReviews = domReviews.map(r => ({
+    author: r.author,
+    rating: r.rating,
+    date: parseRelativeDate(r.dateRaw),
+    text: r.text,
+    ownerReply: r.ownerReply,
+    sentiment: r.sentiment,
+    tags: r.tags
+  }));
+
+  // Combine intercepted network reviews and DOM reviews, eliminating duplicates by author + text
+  const combinedMap = new Map<string, any>();
+  
+  for (const r of [...interceptedReviews, ...parsedDomReviews]) {
+    const key = `${r.author.toLowerCase()}_${r.text.substring(0, 30).toLowerCase()}`;
+    if (!combinedMap.has(key)) {
+      combinedMap.set(key, r);
+    }
+  }
+
+  const finalReviews = Array.from(combinedMap.values());
+
+  return {
+    reviews: finalReviews,
+    overallRating: metaData.overallRating,
+    totalReviewCount: metaData.totalReviewCount
+  };
 }
 
 // API Scrape Google Maps Reviews (Gratis via Puppeteer)
@@ -1011,195 +1216,75 @@ app.post(["/api/sync-branch-performance", "/sync-branch-performance"], async (re
     const now = new Date();
     const formattedTimestamp = `${now.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}, ${now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} WIB`;
 
-    const branchSummaryList = branches.map((b: any) => ({
-      id: b.id,
-      name: b.name,
-      city: b.city,
-      address: b.address,
-      currentRating: b.rating,
-      currentReviews: b.reviewCount
-    }));
+    console.log(`[Sync All Branches] Memulai proses scrape nyata untuk ${branches.length} cabang ${brandName || ''}...`);
 
-    const promptText = `Anda adalah Sistem Intelijen AI Performa Cabang. 
-Berikut adalah daftar cabang resmi dari merek "${brandName}":
-${JSON.stringify(branchSummaryList, null, 2)}
+    let browser: any = null;
+    const updatedBranches = [...branches];
 
-Tugas Anda:
-Jalankan pencarian ulasan & rating Google Maps terbaru untuk setiap cabang tersebut.
-Update indikator performanya meliputi:
-- rating (float 1.0 - 5.0)
-- reviewCount (integer ulasan)
-- complaintCount (integer estimasi isu/komplain)
-- status ("Top" | "Medium" | "Attention Required")
-- trendScore ("improving" | "stable" | "declining")
-- positives (array string poin unggulan)
-- negatives (array string komplain utama)
-
-Kembalikan JSON array persis sesuai skema berikut tanpa mengubah ID, nama, alamat, atau kota cabang:
-[
-  {
-    "id": "id-cabang",
-    "rating": 4.9,
-    "reviewCount": 2890,
-    "complaintCount": 10,
-    "status": "Top",
-    "trendScore": "stable",
-    "positives": ["Poin positif 1", "Poin positif 2"],
-    "negatives": ["Poin negatif 1"]
-  }
-]`;
-
-    if (provider === "sumopod" || provider === "openai") {
-      const keyToUse = apiKey || process.env.SUMOPOD_API_KEY || process.env.OPENAI_API_KEY;
-      if (!keyToUse) {
-        res.status(400).json({ error: `API Key ${provider.toUpperCase()} belum disetel.` });
-        return;
-      }
-
-      let rawBase = baseUrl || "https://ai.sumopod.com/v1";
-      if (rawBase.includes("api.sumopod.com")) {
-        rawBase = rawBase.replace("api.sumopod.com", "ai.sumopod.com");
-      }
-      const targetBase = rawBase.replace(/\/+$/, "");
-      const targetUrl = `${targetBase}/chat/completions`;
-      const modelToUse = model || (provider === "sumopod" ? "gpt-4o" : "gpt-4o-mini");
-
-      const response = await fetch(targetUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${keyToUse}`,
-        },
-        body: JSON.stringify({
-          model: modelToUse,
-          messages: [{ role: "user", content: promptText }],
-          temperature: 0.2,
-        }),
+    try {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=id-ID,id']
       });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const jsonRes = await response.json();
-      const content = jsonRes.choices?.[0]?.message?.content || "[]";
-      const cleaned = content.replace(/```json/g, "").replace(/```/g, "").trim();
-      const updatedMetrics = JSON.parse(cleaned);
-
-      const updatedBranches = branches.map((branch: any) => {
-        const found = updatedMetrics.find((m: any) => m.id === branch.id || m.name === branch.name);
-        if (found) {
-          return { ...branch, ...found };
-        }
-        return branch;
-      });
-
-      res.json({
-        success: true,
-        branches: updatedBranches,
-        lastAISyncTimestamp: formattedTimestamp,
-      });
-      return;
-    }
-
-    // Check Gemini API key availability
-    const keyToUse = apiKey || process.env.GEMINI_API_KEY;
-    
-    if (keyToUse) {
-      try {
-        const ai = getGeminiClient(keyToUse);
-        const geminiModel = model || "gemini-3.6-flash";
-
-        const response = await ai.models.generateContent({
-          model: geminiModel,
-          contents: promptText,
-          config: {
-            tools: [{ googleSearch: {} }],
-          },
-        });
-
-        const responseText = response.text || "[]";
-        let updatedMetrics = [];
+      for (let i = 0; i < updatedBranches.length; i++) {
+        const branch = updatedBranches[i];
+        const branchNameStr = branch.name || `${brandName} ${branch.city}`;
+        const targetUrl = branch.mapsUrl || `https://www.google.com/maps/search/${encodeURIComponent(branchNameStr + ' ' + (branch.city || ''))}`;
+        
+        console.log(`[Sync All Branches] (${i + 1}/${updatedBranches.length}) Scraping: ${branchNameStr}`);
+        
         try {
-          const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-          const rawJson = jsonMatch ? jsonMatch[0] : responseText;
-          const cleaned = rawJson.replace(/```json/g, "").replace(/```/g, "").trim();
-          updatedMetrics = JSON.parse(cleaned);
-        } catch (parseErr) {
-          console.warn("Failed to parse JSON response from Gemini, using existing branches", parseErr);
-        }
+          const page = await browser.newPage();
+          await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+          await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 30000 });
 
-        if (Array.isArray(updatedMetrics) && updatedMetrics.length > 0) {
-          const updatedBranches = branches.map((branch: any) => {
-            const found = updatedMetrics.find((m: any) => m.id === branch.id || m.name === branch.name);
-            if (found) {
-              return {
-                ...branch,
-                rating: typeof found.rating === "number" ? found.rating : branch.rating,
-                reviewCount: typeof found.reviewCount === "number" ? found.reviewCount : branch.reviewCount,
-                complaintCount: typeof found.complaintCount === "number" ? found.complaintCount : branch.complaintCount,
-                status: found.status || branch.status,
-                trendScore: found.trendScore || branch.trendScore,
-                positives: Array.isArray(found.positives) ? found.positives : branch.positives,
-                negatives: Array.isArray(found.negatives) ? found.negatives : branch.negatives,
-              };
-            }
-            return branch;
-          });
+          try {
+            await page.waitForSelector('.wiI7pd', { timeout: 8000 });
+          } catch (e) {}
 
-          res.json({
-            success: true,
-            branches: updatedBranches,
-            lastAISyncTimestamp: formattedTimestamp,
-            source: "gemini_grounded",
-          });
-          return;
+          const extractedData = await scrapeGoogleMapsReviews(page);
+          const reviews = extractedData.reviews;
+          const overallRating = extractedData.overallRating || branch.rating;
+          const totalReviewCount = extractedData.totalReviewCount || branch.reviewCount;
+          const complaintCount = reviews.length;
+
+          // Save detail ulasan & rating ke Cloud PostgreSQL Sumobase & Database Lokal
+          await saveBranchReviewsToDB(branchNameStr, reviews, new Date().toISOString(), overallRating, totalReviewCount);
+
+          // Hitung status kinerja secara objektif
+          let status = 'Medium';
+          if (overallRating >= 4.7 && complaintCount < 5) status = 'Top';
+          else if (overallRating <= 4.4 || complaintCount > 10) status = 'Attention Required';
+
+          updatedBranches[i] = {
+            ...branch,
+            rating: overallRating,
+            reviewCount: totalReviewCount,
+            complaintCount: complaintCount,
+            status,
+            trendScore: overallRating >= 4.7 ? 'improving' : overallRating <= 4.4 ? 'declining' : 'stable'
+          };
+
+          await page.close();
+        } catch (err: any) {
+          console.error(`[Sync All Branches Error] ${branchNameStr}:`, err.message);
         }
-      } catch (geminiErr: any) {
-        console.warn("Gemini API call failed, falling back to smart AI performance sync calculation:", geminiErr?.message);
       }
+    } finally {
+      if (browser) await browser.close();
     }
-
-    // Smart Fallback AI Performance Engine (Executes if no API key or API call fallback)
-    const updatedBranches = branches.map((branch: any) => {
-      const reviewIncrement = Math.floor(Math.random() * 4) + 1; // +1 to +4 ulasan baru
-      const newReviewCount = (branch.reviewCount || 100) + reviewIncrement;
-      
-      // Determine status based on rating
-      let status = branch.status || "Top";
-      if (branch.rating < 4.6) {
-        status = "Attention Required";
-      } else if (branch.rating < 4.8) {
-        status = "Medium";
-      } else {
-        status = "Top";
-      }
-
-      return {
-        ...branch,
-        reviewCount: newReviewCount,
-        status,
-        trendScore: branch.rating >= 4.8 ? "improving" : "stable",
-      };
-    });
 
     res.json({
       success: true,
       branches: updatedBranches,
       lastAISyncTimestamp: formattedTimestamp,
-      source: "ai_smart_grounding",
-      message: "Indikator performa cabang berhasil diperbarui via AI Grounding.",
+      source: "google_maps_puppeteer_scraped",
+      message: `Berhasil scrape dan sinkronisasi ulasan untuk seluruh (${updatedBranches.length}) cabang.`
     });
   } catch (err: any) {
     console.error("Error in /api/sync-branch-performance:", err);
-    // Return graceful success response with current branches to prevent 500 alert in browser
-    const now = new Date();
-    const formattedTimestamp = `${now.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}, ${now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} WIB`;
-    res.json({
-      success: true,
-      branches: req.body.branches || [],
-      lastAISyncTimestamp: formattedTimestamp,
-    });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

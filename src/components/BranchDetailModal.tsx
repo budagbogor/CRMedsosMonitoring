@@ -15,6 +15,7 @@ interface RawGoogleReview {
   rating: number;
   date: string;
   text: string;
+  ownerReply?: string;
   sentiment: 'negative' | 'neutral';
   tags?: string[];
 }
@@ -120,37 +121,48 @@ export const BranchDetailModal: React.FC<BranchDetailModalProps> = ({
     loadSavedReviewsFromDB();
   }, [loadSavedReviewsFromDB]);
 
-  // Ulasan komplain efektif — HANYA dari sumber data nyata, TIDAK pernah mengarang data dummy
-  // Termasuk ulasan bintang 4-5 yang bernada kritik/saran (sesuai permintaan user)
+  // Ulasan komplain efektif — HANYA dari sumber data nyata, memisahkan komplain pelanggan vs respon owner
   const effectiveRawReviews = React.useMemo<RawGoogleReview[]>(() => {
     if (!branch) return [];
 
-    // Prioritas 1: Data hasil live-fetch dari API (Gemini AI / DB tersimpan) — tampilkan semua
+    const isOwnerHeader = (t?: string) => t && /Response from the owner|Tanggapan dari pemilik|Respon dari pemilik|Balasan dari pemilik|Owner response/i.test(t);
+
+    const cleanReviews = (list: any[]): RawGoogleReview[] => {
+      return list
+        .filter(r => {
+          if (!r || !r.text || r.text.trim().length === 0) return false;
+          // Filter out 0-star reviews (which were falsely scraped owner responses)
+          if (r.rating === 0) return false;
+          // Filter out texts that are owner response headers
+          if (isOwnerHeader(r.text) || isOwnerHeader(r.author)) return false;
+          return true;
+        })
+        .map((rev, i) => ({
+          id: rev.id || `rev-${i + 1}`,
+          author: rev.author || 'Pengguna Google',
+          rating: typeof rev.rating === 'number' && rev.rating > 0 ? rev.rating : 1,
+          date: rev.date || '',
+          text: rev.text,
+          ownerReply: rev.ownerReply,
+          sentiment: (rev.sentiment === 'positive' ? 'neutral' : rev.sentiment === 'mixed' ? 'neutral' : 'negative') as 'negative' | 'neutral',
+          tags: rev.tags || []
+        }));
+    };
+
+    // Prioritas 1: Data hasil live-fetch dari API / DB tersimpan
     if (rawReviews && rawReviews.length > 0) {
-      return rawReviews;
+      const cleaned = cleanReviews(rawReviews);
+      if (cleaned.length > 0) return cleaned;
     }
 
-    // Prioritas 2: Data recentReviews dari dataset — tampilkan semua yang bernada komplain/kritik
+    // Prioritas 2: Data recentReviews dari dataset
     if (branch.recentReviews && branch.recentReviews.length > 0) {
-      // Tampilkan semua review yang punya sentiment negative/mixed, atau rating <= 3
       const complaintReviews = branch.recentReviews.filter(rev => 
         rev.rating <= 3 || rev.sentiment === 'negative' || rev.sentiment === 'mixed'
       );
-      if (complaintReviews.length > 0) {
-        return complaintReviews.map((rev, i) => ({
-          id: rev.id || `rec-rev-${i + 1}`,
-          author: rev.author,
-          rating: rev.rating,
-          date: rev.date,
-          text: rev.text,
-          sentiment: (rev.sentiment === 'positive' ? 'neutral' : rev.sentiment === 'mixed' ? 'neutral' : 'negative') as 'negative' | 'neutral',
-          tags: rev.tags
-        }));
-      }
+      return cleanReviews(complaintReviews);
     }
 
-    // Jika tidak ada data ulasan komplain dari sumber manapun, kembalikan array kosong
-    // UI akan menampilkan "Tidak Ada Ulasan Komplain Ditemukan"
     return [];
   }, [rawReviews, branch]);
 
@@ -735,14 +747,31 @@ export const BranchDetailModal: React.FC<BranchDetailModalProps> = ({
                           </div>
 
                           {/* Review Text — SAMA PERSIS dari Google Review */}
-                          <div className="bg-white/70 rounded-lg p-3 border border-slate-200">
-                            <div className="text-[9px] text-slate-500 uppercase font-bold mb-1.5 flex items-center gap-1">
-                              <MessageSquare className="w-2.5 h-2.5" />
-                              Teks Asli Google Review:
+                          <div className="bg-white/70 rounded-lg p-3 border border-slate-200 space-y-2.5">
+                            <div>
+                              <div className="text-[9px] text-slate-500 uppercase font-bold mb-1 flex items-center gap-1">
+                                <MessageSquare className="w-2.5 h-2.5 text-slate-500" />
+                                Kutipan Keluhan Pelanggan:
+                              </div>
+                              <p className="text-xs text-slate-800 leading-relaxed italic">
+                                &ldquo;{rev.text}&rdquo;
+                              </p>
                             </div>
-                            <p className="text-xs text-slate-800 leading-relaxed italic">
-                              &ldquo;{rev.text}&rdquo;
-                            </p>
+
+                            {/* Tanggapan / Respon dari Owner */}
+                            {rev.ownerReply && (
+                              <div className="pt-2 border-t border-slate-200">
+                                <div className="p-2.5 bg-blue-50/90 border border-blue-200 rounded-lg text-xs">
+                                  <div className="text-[10px] text-blue-800 font-bold uppercase mb-1 flex items-center gap-1.5">
+                                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                    Respon / Jawaban Resmi dari Owner:
+                                  </div>
+                                  <p className="text-blue-950 italic leading-relaxed text-[11px]">
+                                    &ldquo;{rev.ownerReply}&rdquo;
+                                  </p>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}

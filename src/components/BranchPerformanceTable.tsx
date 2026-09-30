@@ -191,22 +191,22 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
             <button
               onClick={onSyncBranchPerformanceAI}
               disabled={isSyncingPerformance}
-              title="Tarik & perbarui rating, jumlah ulasan, serta komplain setiap cabang langsung menggunakan Google Search Grounding AI"
+              title="Scrape nyata Google Maps (Rating, Jumlah Ulasan, & Detail Ulasan Komplain) untuk SEMUA lokasi cabang"
               className={`px-4 py-2 rounded-xl text-xs font-bold shadow-lg inline-flex items-center gap-2 transition-all ${
                 isSyncingPerformance
-                  ? 'bg-slate-50 text-amber-600 border border-amber-500/50 cursor-wait'
+                  ? 'bg-amber-100 text-amber-900 border border-amber-500/50 cursor-wait'
                   : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-amber-500/20 active:scale-95'
               }`}
             >
               {isSyncingPerformance ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-amber-600" />
-                  <span>AI Sedang Menarik Performance...</span>
+                  <RefreshCw className="w-4 h-4 animate-spin text-amber-800" />
+                  <span>Sedang Scrape Semua Cabang...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-slate-950 fill-slate-950" />
-                  <span>🤖 Tarik Performance Cabang via AI</span>
+                  <RefreshCw className="w-4 h-4 text-slate-950 font-black" />
+                  <span>🔄 Scrape Performance Semua Cabang</span>
                 </>
               )}
             </button>
