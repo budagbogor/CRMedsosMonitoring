@@ -168,8 +168,8 @@ async function saveBranchReviewsToDB(branchName: string, reviews: any[], fetched
       ON CONFLICT (branch_name)
       DO UPDATE SET 
         reviews = CASE WHEN jsonb_array_length($2::jsonb) > 0 THEN $2::jsonb ELSE branch_reviews.reviews END, 
-        rating = $3, 
-        review_count = $4, 
+        rating = CASE WHEN $3 > 0 THEN $3 ELSE branch_reviews.rating END, 
+        review_count = CASE WHEN $4 > 0 THEN $4 ELSE branch_reviews.review_count END, 
         fetched_at = $5, 
         last_sync = NOW();
     `, [branchName, JSON.stringify(reviews), rating, reviewCount, fetchedAt]);
@@ -465,6 +465,8 @@ app.get(["/api/scrape-status/:taskId", "/scrape-status/:taskId"], (req, res) => 
   res.json(scrapeTasks[taskId]);
 });
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 // API Bulk Scrape Google Maps Reviews (From Existing Table JSON)
 app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (req, res) => {
   const { branches } = req.body;
@@ -513,60 +515,58 @@ app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
         
         try {
-          await page.waitForSelector('.wiI7pd', { timeout: 10000 });
+          await page.waitForSelector('body', { timeout: 10000 });
         } catch (e) {
-          console.log(`[Bulk Scrape JSON] ${branchName}: Timeout menunggu .wiI7pd`);
+          console.log(`[Bulk Scrape JSON] ${branchName}: Timeout menunggu body`);
         }
 
         const extractedData = await page.evaluate(() => {
-          const reviewElements = document.querySelectorAll('.wiI7pd');
-          const reviews: any[] = [];
-          reviewElements.forEach((el) => {
-            if (el.textContent && el.textContent.trim().length > 0) {
-              reviews.push({ text: el.textContent.trim() });
-            }
-          });
-
           let overallRating = 0;
           let totalReviewCount = 0;
           try {
-            const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
-            if (ratingEl) {
-              const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
-              if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+            const mainText = document.body.innerText.substring(0, 1000);
+            let match = mainText.match(/([1-5][.,][0-9])\s*\n\(([\d,.]+)\)/);
+            if (!match) {
+              match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
             }
-            
-            const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
-            if (countEl) {
-              const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
-              if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
-            }
-
-            if (!overallRating || !totalReviewCount) {
-              const mainText = document.body.innerText;
-              const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
-              if (match) {
-                if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
-                if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
-              }
+            if (match) {
+              overallRating = parseFloat(match[1].replace(',', '.'));
+              totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
             }
           } catch (e) {}
-
-          return { reviews, overallRating, totalReviewCount };
+          return { overallRating, totalReviewCount };
         });
 
-        const formattedReviews = extractedData.reviews.map((r: any) => ({
-          author: "Google User (Scraped)",
-          rating: 0,
-          date: new Date().toISOString(),
-          text: r.text,
-          sentiment: "neutral",
-          tags: []
-        }));
+        // Coba ambil ulasan komplain via Gemini agar selaras dengan single scrape
+        let formattedReviews: any[] = [];
+        try {
+          const keyToUse = process.env.GEMINI_API_KEY;
+          if (keyToUse) {
+            const ai = getGeminiClient(keyToUse);
+            const REVIEW_FETCH_PROMPT = `Cari ulasan Google Review 6 bulan terakhir untuk bisnis: "${branchName} ${branch.city || ""}".
+Ambil SEMUA ulasan KELUHAN/KRITIK/SARAN dari rating 1 sampai 5. Salin teks persis. 
+Kembalikan JSON array persis seperti ini: [{"author":"Nama","rating":4,"date":"...","text":"...","sentiment":"negative"}]. 
+Jika tidak ada komplain, kembalikan [].`;
+
+            const response = await ai.models.generateContent({
+              model: "gemini-3.6-flash",
+              contents: REVIEW_FETCH_PROMPT,
+              config: { tools: [{ googleSearch: {} }] },
+            });
+            const cleaned = (response.text || "[]").replace(/```json/gi, "").replace(/```/g, "").trim();
+            const match = cleaned.match(/\[[\s\S]*\]/);
+            if (match) {
+              formattedReviews = JSON.parse(match[0]);
+              formattedReviews = Array.isArray(formattedReviews) ? formattedReviews : [];
+            }
+          }
+        } catch (geminiErr: any) {
+          console.error(`[Bulk Scrape JSON] Gemini fetch error for ${branchName}:`, geminiErr.message);
+        }
 
         if (formattedReviews.length > 0 || extractedData.totalReviewCount > 0) {
           await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
-          console.log(`[Bulk Scrape JSON] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan (dan meta-data).`);
+          console.log(`[Bulk Scrape JSON] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan komplain (dan rating ${extractedData.overallRating}).`);
         } else {
           console.log(`[Bulk Scrape JSON] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
         }
@@ -577,6 +577,7 @@ app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (
       }
       
       scrapeTasks[taskId].current++;
+      await delay(4000); // 4-second delay to avoid Gemini rate limits
     }
     
     scrapeTasks[taskId].status = 'completed';
@@ -638,70 +639,69 @@ app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (
                 await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
                 
                 try {
-                  await page.waitForSelector('.wiI7pd', { timeout: 10000 });
+                  await page.waitForSelector('body', { timeout: 10000 });
                 } catch (e) {
-                  console.log(`[Bulk Scrape] ${branchName}: Timeout menunggu .wiI7pd`);
+                  console.log(`[Bulk Scrape] ${branchName}: Timeout menunggu body`);
                 }
 
                 const extractedData = await page.evaluate(() => {
-                  const reviewElements = document.querySelectorAll('.wiI7pd');
-                  const reviews: any[] = [];
-                  reviewElements.forEach((el) => {
-                    if (el.textContent && el.textContent.trim().length > 0) {
-                      reviews.push({ text: el.textContent.trim() });
-                    }
-                  });
-
                   let overallRating = 0;
                   let totalReviewCount = 0;
                   try {
-                    const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
-                    if (ratingEl) {
-                      const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
-                      if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+                    const mainText = document.body.innerText.substring(0, 1000);
+                    let match = mainText.match(/([1-5][.,][0-9])\s*\n\(([\d,.]+)\)/);
+                    if (!match) {
+                      match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
                     }
-                    
-                    const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
-                    if (countEl) {
-                      const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
-                      if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
-                    }
-
-                    if (!overallRating || !totalReviewCount) {
-                      const mainText = document.body.innerText;
-                      const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
-                      if (match) {
-                        if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
-                        if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
-                      }
+                    if (match) {
+                      overallRating = parseFloat(match[1].replace(',', '.'));
+                      totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
                     }
                   } catch (e) {}
-
-                  return { reviews, overallRating, totalReviewCount };
+                  return { overallRating, totalReviewCount };
                 });
 
-                const formattedReviews = extractedData.reviews.map((r: any) => ({
-                  author: "Google User (Scraped)",
-                  rating: 0,
-                  date: new Date().toISOString(),
-                  text: r.text,
-                  sentiment: "neutral",
-                  tags: []
-                }));
+                // Coba ambil ulasan komplain via Gemini agar selaras dengan single scrape
+                let formattedReviews: any[] = [];
+                try {
+                  const keyToUse = process.env.GEMINI_API_KEY;
+                  if (keyToUse) {
+                    const ai = getGeminiClient(keyToUse);
+                    const REVIEW_FETCH_PROMPT = `Cari ulasan Google Review 6 bulan terakhir untuk bisnis: "${branchName} ${row.Kota || ""}".
+Ambil SEMUA ulasan KELUHAN/KRITIK/SARAN dari rating 1 sampai 5. Salin teks persis. 
+Kembalikan JSON array persis seperti ini: [{"author":"Nama","rating":4,"date":"...","text":"...","sentiment":"negative"}]. 
+Jika tidak ada komplain, kembalikan [].`;
+
+                    const response = await ai.models.generateContent({
+                      model: "gemini-3.6-flash",
+                      contents: REVIEW_FETCH_PROMPT,
+                      config: { tools: [{ googleSearch: {} }] },
+                    });
+                    const cleaned = (response.text || "[]").replace(/```json/gi, "").replace(/```/g, "").trim();
+                    const match = cleaned.match(/\[[\s\S]*\]/);
+                    if (match) {
+                      formattedReviews = JSON.parse(match[0]);
+                      formattedReviews = Array.isArray(formattedReviews) ? formattedReviews : [];
+                    }
+                  }
+                } catch (geminiErr: any) {
+                  console.error(`[Bulk Scrape] Gemini fetch error for ${branchName}:`, geminiErr.message);
+                }
 
                 if (formattedReviews.length > 0 || extractedData.totalReviewCount > 0) {
                   await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
-                  console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan (dan meta-data).`);
+                  console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan komplain (dan rating ${extractedData.overallRating}).`);
                 } else {
                   console.log(`[Bulk Scrape] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
                 }
                 
                 await page.close();
               } catch (err: any) {
-                console.error(`[Bulk Scrape Error] ${branchName}:`, err.message);
+                console.error(`[Bulk Scrape] ${branchName}:`, err.message);
               }
               
               scrapeTasks[taskId].current++;
+              await delay(4000); // 4-second delay to avoid Gemini rate limits
             }
             scrapeTasks[taskId].status = 'completed';
           } catch (err: any) {

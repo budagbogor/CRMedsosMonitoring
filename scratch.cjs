@@ -7,19 +7,32 @@ const puppeteer = require('puppeteer');
   await page.goto('https://www.google.com/maps/search/Mobeng%20Cipondoh%20Tangerang', {waitUntil: 'networkidle2'});
   
   const extracted = await page.evaluate(() => {
-    // Find any element containing 93
-    const elements = Array.from(document.querySelectorAll('*')).filter(e => e.childNodes.length === 1 && e.childNodes[0].nodeType === 3 && e.innerText && e.innerText.includes('93'));
-    
-    let result = [];
-    for (let el of elements) {
-      result.push({
-        tagName: el.tagName,
-        text: el.innerText,
-        className: el.className,
-        ariaLabel: el.getAttribute('aria-label')
-      });
-    }
-    return result;
+    let overallRating = 0;
+    let totalReviewCount = 0;
+    try {
+      const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+      if (ratingEl) {
+        const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+        if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+      }
+      
+      const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+      if (countEl) {
+        const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+        if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
+      }
+
+      if (!overallRating || !totalReviewCount) {
+        const mainText = document.body.innerText;
+        const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+        if (match) {
+          if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
+          if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+        }
+      }
+    } catch (e) {}
+
+    return { overallRating, totalReviewCount };
   });
   
   console.log(JSON.stringify(extracted, null, 2));
