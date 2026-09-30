@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import pg from "pg";
 import { createServer as createViteServer } from "vite";
 import { Resend } from "resend";
+import puppeteer from "puppeteer";
 
 dotenv.config();
 
@@ -275,6 +276,60 @@ app.post(["/api/send-email", "/send-email"], async (req, res) => {
     res.json({ success: true, data });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// API Scrape Google Maps Reviews (Gratis via Puppeteer)
+app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, res) => {
+  const { url } = req.body;
+  if (!url) {
+    res.status(400).json({ success: false, error: "URL Google Maps wajib diisi." });
+    return;
+  }
+
+  try {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=id-ID,id']
+    });
+    const page = await browser.newPage();
+    
+    // Set a realistic user agent
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    
+    // Navigate to the provided URL
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+    
+    // Wait for review elements (common class in Google Maps is .wiI7pd or something similar, we will try multiple selectors)
+    try {
+      await page.waitForSelector('.wiI7pd', { timeout: 10000 });
+    } catch (e) {
+      console.log('Timeout waiting for .wiI7pd selector. The page structure might be different atau tidak ada review.');
+    }
+
+    // Extract review texts
+    const reviews = await page.evaluate(() => {
+      // Common class name for Google Maps review text
+      const reviewElements = document.querySelectorAll('.wiI7pd');
+      const data: any[] = [];
+      reviewElements.forEach((el) => {
+        if (el.textContent && el.textContent.trim().length > 0) {
+          data.push({ text: el.textContent.trim() });
+        }
+      });
+      return data;
+    });
+
+    await browser.close();
+
+    res.json({
+      success: true,
+      message: `Berhasil scraping ${reviews.length} ulasan dari Google Maps.`,
+      reviews: reviews
+    });
+
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || 'Terjadi kesalahan saat scraping.' });
   }
 });
 

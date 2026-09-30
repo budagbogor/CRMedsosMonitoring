@@ -46,6 +46,8 @@ export const CSAutomationModal: React.FC<CSAutomationModalProps> = ({
   const [newEmailInput, setNewEmailInput] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isScraping, setIsScraping] = useState(false);
+  const [scrapeResult, setScrapeResult] = useState<{ success: boolean; message: string; data?: any[] } | null>(null);
   const [simulationResult, setSimulationResult] = useState<{
     success: boolean;
     sentTo: string;
@@ -198,6 +200,35 @@ export const CSAutomationModal: React.FC<CSAutomationModalProps> = ({
       console.error(err);
       setIsSimulating(false);
       alert('Gagal mengirim email: ' + String(err));
+    }
+  };
+
+  const handleTestScrape = async () => {
+    if (!formData.googleBusinessApiKey || !formData.googleBusinessApiKey.startsWith('http')) {
+      alert('Mohon masukkan URL Google Maps yang valid (berawalan http) di kolom Google API Key.');
+      return;
+    }
+    
+    setIsScraping(true);
+    setScrapeResult(null);
+
+    try {
+      const response = await fetch('/api/scrape-google-reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: formData.googleBusinessApiKey }),
+      });
+
+      const data = await response.json();
+      setScrapeResult({
+        success: data.success,
+        message: data.message || data.error,
+        data: data.reviews,
+      });
+    } catch (err) {
+      setScrapeResult({ success: false, message: 'Gagal melakukan scraping: ' + String(err) });
+    } finally {
+      setIsScraping(false);
     }
   };
 
@@ -572,19 +603,43 @@ export const CSAutomationModal: React.FC<CSAutomationModalProps> = ({
               />
             </div>
 
-            {/* Input 3: Google Places / Business Profile API Key */}
+            {/* Input 3: Google Places / Business Profile API Key OR Scraping URL */}
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-700 flex items-center justify-between">
-                <span>🗺️ Google Places & Business Profile API Key</span>
-                <span className="text-[10px] font-normal text-slate-500">Google Cloud Console</span>
+                <span>🗺️ Google API Key / URL Google Maps (Scraping Gratis)</span>
+                <span className="text-[10px] font-normal text-slate-500">Google Cloud / Maps URL</span>
               </label>
-              <input
-                type="password"
-                value={formData.googleBusinessApiKey || ''}
-                onChange={(e) => setFormData({ ...formData, googleBusinessApiKey: e.target.value })}
-                placeholder="Masukkan Google API Key (AIzaSy...)"
-                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-500 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={formData.googleBusinessApiKey || ''}
+                  onChange={(e) => setFormData({ ...formData, googleBusinessApiKey: e.target.value })}
+                  placeholder="Masukkan Google API Key ATAU URL Google Maps untuk Scraping..."
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-500 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <button
+                  type="button"
+                  onClick={handleTestScrape}
+                  disabled={isScraping}
+                  className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg text-xs transition-colors disabled:opacity-50 shrink-0 flex items-center gap-1"
+                >
+                  {isScraping ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+                  Uji Scraping
+                </button>
+              </div>
+              {scrapeResult && (
+                <div className={`mt-2 p-2 rounded text-[11px] font-medium border ${scrapeResult.success ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                  {scrapeResult.message}
+                  {scrapeResult.data && scrapeResult.data.length > 0 && (
+                    <ul className="mt-2 pl-4 list-disc space-y-1 font-normal opacity-90">
+                      {scrapeResult.data.slice(0, 3).map((r, i) => (
+                        <li key={i} className="line-clamp-2">"{r.text}"</li>
+                      ))}
+                      {scrapeResult.data.length > 3 && <li>...dan {scrapeResult.data.length - 3} lainnya</li>}
+                    </ul>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Mode Direct Reply Choice */}
