@@ -310,18 +310,39 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
       console.log('Timeout waiting for .wiI7pd selector. The page structure might be different atau tidak ada review.');
     }
 
-    // Extract review texts
-    const reviews = await page.evaluate(() => {
+    // Extract review texts, rating, and review count
+    const extractedData = await page.evaluate(() => {
       // Common class name for Google Maps review text
       const reviewElements = document.querySelectorAll('.wiI7pd');
-      const data: any[] = [];
+      const reviews: any[] = [];
       reviewElements.forEach((el) => {
         if (el.textContent && el.textContent.trim().length > 0) {
-          data.push({ text: el.textContent.trim() });
+          reviews.push({ text: el.textContent.trim() });
         }
       });
-      return data;
+
+      // Try to extract overall rating and review count from the page text
+      let overallRating = 0;
+      let totalReviewCount = 0;
+      
+      try {
+        // Find text like "4.5 (93)" or "4,5 (93 ulasan)" in the document
+        // Look in headings or main info areas first
+        const mainText = document.body.innerText;
+        // Regex looks for "4.5" or "4,5" followed by optional spaces/text, then "(93)" or "(93 reviews)"
+        const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+        if (match) {
+          overallRating = parseFloat(match[1].replace(',', '.'));
+          totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+        }
+      } catch (e) {}
+
+      return { reviews, overallRating, totalReviewCount };
     });
+
+    const reviews = extractedData.reviews;
+    const overallRating = extractedData.overallRating;
+    const totalReviewCount = extractedData.totalReviewCount;
 
     await browser.close();
 
@@ -345,7 +366,9 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
       success: true,
       message: `Berhasil scraping ${reviews.length} ulasan dari Google Maps.${branchName ? ` Tersimpan ${savedCount} ulasan untuk cabang ${branchName}.` : ''}`,
       reviews: reviews,
-      savedCount
+      savedCount,
+      rating: overallRating,
+      reviewCount: totalReviewCount
     });
 
   } catch (err: any) {

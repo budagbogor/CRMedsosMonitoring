@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-20T12:38:21.032Z",
+  "lastUpdated": "2026-09-30T05:28:34.147Z",
   "branches": {
     "Mobeng Brigjen Katamso": {
       "reviews": [
@@ -125,24 +125,32 @@
     "Mobeng Cipondoh": {
       "reviews": [
         {
-          "id": "rev-cpd-1",
-          "author": "Hendra W.",
-          "rating": 3,
-          "date": "3 minggu lalu",
-          "text": "Pelayanan kasir dan pendaftaran ramah, tapi akses parkir keluar agak sempit pas jalanan macet.",
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T05:28:34.146Z",
+          "text": "Kesini karena mau ganti ban belakang yang udh mulai botak. Kebetulan lagi ada promo trade in ban lama ke ban baru.\nRuang tunggu nyaman dan disediakan kopi dan teh. …",
           "sentiment": "neutral",
-          "tags": [
-            "Parkir",
-            "Aksesibilitas"
-          ]
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T05:28:34.146Z",
+          "text": "Sudah Dua Kali servis disini, harga bersahabat Dan kualitasnya terbaik, ruang tunggu nyaman ber AC Dan ada free welcome drink, jangan ragu untuk servis disini.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T05:28:34.146Z",
+          "text": "Penyelamat! Pas hujan, sore,wiper mati, bengkel sebelumnya nolak, kalau ini langsung ngerjain dengan sepenuh hati huhu terharu bgt bgt",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.568Z",
-      "meta": {
-        "rating": 4.4,
-        "reviewCount": 312
-      }
+      "fetchedAt": "2026-09-30T05:28:34.146Z",
+      "lastSync": "2026-09-30T05:28:34.147Z"
     },
     "Mobeng Pondok Betung": {
       "reviews": [

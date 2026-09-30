@@ -15,6 +15,7 @@ interface BranchPerformanceTableProps {
   lastAISyncTimestamp?: string;
   autoSyncInterval?: string;
   onOpenAISettings?: () => void;
+  onBranchUpdated?: (branchId: string, updates: Partial<BranchData>) => void;
 }
 
 export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
@@ -30,6 +31,7 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
   lastAISyncTimestamp,
   autoSyncInterval = 'off',
   onOpenAISettings,
+  onBranchUpdated,
 }) => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -50,6 +52,12 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
       const data = await response.json();
       if (data.success) {
         alert(data.message);
+        if (onBranchUpdated && data.rating && data.reviewCount) {
+          onBranchUpdated(branch.id, {
+            rating: data.rating,
+            reviewCount: data.reviewCount
+          });
+        }
       } else {
         alert(`Gagal scrape ${branch.name}: ${data.error}`);
       }

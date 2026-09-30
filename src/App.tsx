@@ -81,6 +81,16 @@ export default function App() {
   const [selectedCompareBranches, setSelectedCompareBranches] = useState<BranchData[]>([]);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
+  // Single Branch Update Handle
+  const handleBranchUpdated = (branchId: string, updates: Partial<BranchData>) => {
+    setReport((prev) => ({
+      ...prev,
+      branches: prev.branches.map((b) => 
+        b.id === branchId ? { ...b, ...updates } : b
+      )
+    }));
+  };
+
   // Multi-Agent Execution State
   const [agentStates, setAgentStates] = useState<Record<string, AgentExecutionState>>({});
 
@@ -627,6 +637,7 @@ export default function App() {
           lastAISyncTimestamp={report.lastAISyncTimestamp}
           autoSyncInterval={aiConfig.autoSyncPerformanceInterval || 'off'}
           onOpenAISettings={() => setIsAISettingsOpen(true)}
+          onBranchUpdated={handleBranchUpdated}
         />
 
         {/* Section 2: Pemetaan Klaster Wilayah / Regional */}
