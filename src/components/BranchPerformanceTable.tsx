@@ -35,6 +35,30 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortField, setSortField] = useState<'rating' | 'reviewCount' | 'complaintCount'>('rating');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [scrapingBranchId, setScrapingBranchId] = useState<string | null>(null);
+
+  const handleRowScrape = async (branch: BranchData) => {
+    if (scrapingBranchId) return; // Prevent multiple clicks
+    setScrapingBranchId(branch.id);
+    const url = branch.mapsUrl || `https://www.google.com/maps/search/${encodeURIComponent(branch.name + ' ' + branch.city)}`;
+    try {
+      const response = await fetch('/api/scrape-google-reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, branchName: branch.name }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert(data.message);
+      } else {
+        alert(`Gagal scrape ${branch.name}: ${data.error}`);
+      }
+    } catch (err: any) {
+      alert(`Gagal menghubungi server: ${err.message}`);
+    } finally {
+      setScrapingBranchId(null);
+    }
+  };
 
   // Strict Brand Isolation + Filter & Sort
   const sortedAndFilteredBranches = useMemo(() => {
@@ -412,6 +436,15 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
                     {/* Column 6: Action Button */}
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <div className="inline-flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleRowScrape(branch)}
+                          disabled={scrapingBranchId === branch.id}
+                          className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors shadow-xs gap-1 disabled:opacity-50"
+                          title="Scrape Data Google Maps Cabang Ini"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 text-blue-600 ${scrapingBranchId === branch.id ? 'animate-spin' : ''}`} />
+                          <span>Scrape</span>
+                        </button>
                         <button
                           onClick={() => onSelectBranch(branch, 'overview')}
                           className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-50 text-slate-800 hover:bg-slate-100 transition-colors shadow-xs gap-1"

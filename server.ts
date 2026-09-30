@@ -325,10 +325,27 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
 
     await browser.close();
 
+    // Format reviews for Database if branchName is provided
+    const { branchName } = req.body;
+    let savedCount = 0;
+    if (branchName && reviews.length > 0) {
+      const formattedReviews = reviews.map(r => ({
+        author: "Google User (Scraped)",
+        rating: 0,
+        date: new Date().toISOString(),
+        text: r.text,
+        sentiment: "neutral",
+        tags: []
+      }));
+      await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString());
+      savedCount = formattedReviews.length;
+    }
+
     res.json({
       success: true,
-      message: `Berhasil scraping ${reviews.length} ulasan dari Google Maps.`,
-      reviews: reviews
+      message: `Berhasil scraping ${reviews.length} ulasan dari Google Maps.${branchName ? ` Tersimpan ${savedCount} ulasan untuk cabang ${branchName}.` : ''}`,
+      reviews: reviews,
+      savedCount
     });
 
   } catch (err: any) {
