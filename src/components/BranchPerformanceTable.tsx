@@ -53,9 +53,17 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
       if (data.success) {
         alert(data.message);
         if (onBranchUpdated && data.rating && data.reviewCount) {
+          let newStatus: BranchStatus = 'Medium';
+          const currentComplaints = data.reviews ? data.reviews.length : (branch.complaintCount || 0);
+          if (data.rating >= 4.7 && currentComplaints < 5) newStatus = 'Top';
+          else if (data.rating <= 4.4 || currentComplaints > 10) newStatus = 'Attention Required';
+          else newStatus = 'Medium';
+
           onBranchUpdated(branch.id, {
             rating: data.rating,
-            reviewCount: data.reviewCount
+            reviewCount: data.reviewCount,
+            status: newStatus,
+            complaintCount: currentComplaints
           });
         }
       } else {
