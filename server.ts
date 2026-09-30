@@ -454,6 +454,17 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
     res.status(500).json({ success: false, error: err.message || 'Terjadi kesalahan saat scraping.' });
   }
 });
+// Task Tracker for Background Scraping
+const scrapeTasks: Record<string, { total: number; current: number; status: 'running' | 'completed' | 'error', error?: string }> = {};
+
+app.get(["/api/scrape-status/:taskId", "/scrape-status/:taskId"], (req, res) => {
+  const taskId = req.params.taskId;
+  if (!scrapeTasks[taskId]) {
+    return res.status(404).json({ error: "Task not found" });
+  }
+  res.json(scrapeTasks[taskId]);
+});
+
 // API Bulk Scrape Google Maps Reviews (From Existing Table JSON)
 app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (req, res) => {
   const { branches } = req.body;
@@ -462,11 +473,14 @@ app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (
     return;
   }
 
+  const taskId = `scrape-${Date.now()}`;
+  scrapeTasks[taskId] = { total: branches.length, current: 0, status: 'running' };
+
   // Send success response immediately so the UI doesn't hang
   res.json({ 
     success: true, 
     message: `Memulai scraping untuk ${branches.length} cabang di background.`,
-    taskId: `scrape-${Date.now()}`
+    taskId: taskId
   });
 
   let browser: any = null;
@@ -487,6 +501,7 @@ app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (
 
       if (!branchName) {
         console.log(`[Bulk Scrape JSON] Melewati baris tidak valid: nama kosong`);
+        scrapeTasks[taskId].current++;
         continue;
       }
 
@@ -560,9 +575,15 @@ app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (
       } catch (err: any) {
         console.error(`[Bulk Scrape JSON Error] ${branchName}:`, err.message);
       }
+      
+      scrapeTasks[taskId].current++;
     }
-  } catch (err) {
+    
+    scrapeTasks[taskId].status = 'completed';
+  } catch (err: any) {
     console.error("[Bulk Scrape JSON Fatal Error]:", err);
+    scrapeTasks[taskId].status = 'error';
+    scrapeTasks[taskId].error = err.message;
   } finally {
     if (browser) await browser.close();
   }
@@ -582,111 +603,114 @@ app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (
       header: true,
       skipEmptyLines: true,
       complete: async (results) => {
-        // Send success response immediately so the UI doesn't hang
-        res.json({ 
-          success: true, 
-          message: `File CSV diterima. Memulai scraping untuk ${results.data.length} cabang di background.`,
-          taskId: `scrape-${Date.now()}`
-        });
+          const taskId = `scrape-${Date.now()}`;
+          scrapeTasks[taskId] = { total: rows.length, current: 0, status: 'running' };
 
-        const rows = results.data as Array<{NamaCabang: string, Kota: string, URLGoogleMaps: string}>;
-        
-        let browser: any = null;
-        try {
-          browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=id-ID,id']
+          // Send success response immediately so the UI doesn't hang
+          res.json({ 
+            success: true, 
+            message: `File CSV diterima. Memulai scraping untuk ${rows.length} cabang di background.`,
+            taskId: taskId
           });
+          
+          let browser: any = null;
+          try {
+            browser = await puppeteer.launch({
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=id-ID,id']
+            });
 
-          for (const row of rows) {
-            const branchName = row.NamaCabang?.trim();
-            const url = row.URLGoogleMaps?.trim();
-            
-            if (!branchName || !url || !url.startsWith('http')) {
-              console.log(`[Bulk Scrape] Melewati baris tidak valid: ${branchName}`);
-              continue;
-            }
+            for (const row of rows) {
+              const branchName = row.NamaCabang?.trim();
+              const url = row.URLGoogleMaps?.trim();
+              
+              if (!branchName || !url || !url.startsWith('http')) {
+                console.log(`[Bulk Scrape] Melewati baris tidak valid: ${branchName}`);
+                scrapeTasks[taskId].current++;
+                continue;
+              }
 
-            console.log(`[Bulk Scrape] Memproses cabang: ${branchName}`);
-            
-            try {
-              const page = await browser.newPage();
-              await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-              await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+              console.log(`[Bulk Scrape] Memproses cabang: ${branchName}`);
               
               try {
-                await page.waitForSelector('.wiI7pd', { timeout: 10000 });
-              } catch (e) {
-                console.log(`[Bulk Scrape] ${branchName}: Timeout menunggu .wiI7pd`);
-              }
+                const page = await browser.newPage();
+                await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+                await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+                
+                try {
+                  await page.waitForSelector('.wiI7pd', { timeout: 10000 });
+                } catch (e) {
+                  console.log(`[Bulk Scrape] ${branchName}: Timeout menunggu .wiI7pd`);
+                }
 
-              const extractedData = await page.evaluate(() => {
-                const reviewElements = document.querySelectorAll('.wiI7pd');
-                const reviews: any[] = [];
-                reviewElements.forEach((el) => {
-                  if (el.textContent && el.textContent.trim().length > 0) {
-                    reviews.push({ text: el.textContent.trim() });
-                  }
+                const extractedData = await page.evaluate(() => {
+                  const reviewElements = document.querySelectorAll('.wiI7pd');
+                  const reviews: any[] = [];
+                  reviewElements.forEach((el) => {
+                    if (el.textContent && el.textContent.trim().length > 0) {
+                      reviews.push({ text: el.textContent.trim() });
+                    }
+                  });
+
+                  let overallRating = 0;
+                  let totalReviewCount = 0;
+                  try {
+                    const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+                    if (ratingEl) {
+                      const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+                      if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+                    }
+                    
+                    const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+                    if (countEl) {
+                      const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+                      if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
+                    }
+
+                    if (!overallRating || !totalReviewCount) {
+                      const mainText = document.body.innerText;
+                      const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+                      if (match) {
+                        if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
+                        if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+                      }
+                    }
+                  } catch (e) {}
+
+                  return { reviews, overallRating, totalReviewCount };
                 });
 
-                let overallRating = 0;
-                let totalReviewCount = 0;
-                try {
-                  // Find rating via aria-label
-                  const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
-                  if (ratingEl) {
-                    const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
-                    if (m) overallRating = parseFloat(m[1].replace(',', '.'));
-                  }
-                  
-                  // Find review count via aria-label
-                  const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
-                  if (countEl) {
-                    const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
-                    if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
-                  }
+                const formattedReviews = extractedData.reviews.map((r: any) => ({
+                  author: "Google User (Scraped)",
+                  rating: 0,
+                  date: new Date().toISOString(),
+                  text: r.text,
+                  sentiment: "neutral",
+                  tags: []
+                }));
 
-                  // Fallback to text matching if not found
-                  if (!overallRating || !totalReviewCount) {
-                    const mainText = document.body.innerText;
-                    const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
-                    if (match) {
-                      if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
-                      if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
-                    }
-                  }
-                } catch (e) {}
-
-                return { reviews, overallRating, totalReviewCount };
-              });
-
-              // Format reviews for Database
-              const formattedReviews = extractedData.reviews.map(r => ({
-                author: "Google User (Scraped)",
-                rating: 0,
-                date: new Date().toISOString(),
-                text: r.text,
-                sentiment: "neutral",
-                tags: []
-              }));
-
-              if (formattedReviews.length > 0 || extractedData.totalReviewCount > 0) {
-                await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
-                console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan (dan meta-data).`);
-              } else {
-                console.log(`[Bulk Scrape] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
+                if (formattedReviews.length > 0 || extractedData.totalReviewCount > 0) {
+                  await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
+                  console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan (dan meta-data).`);
+                } else {
+                  console.log(`[Bulk Scrape] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
+                }
+                
+                await page.close();
+              } catch (err: any) {
+                console.error(`[Bulk Scrape Error] ${branchName}:`, err.message);
               }
               
-              await page.close();
-            } catch (err: any) {
-              console.error(`[Bulk Scrape Error] ${branchName}:`, err.message);
+              scrapeTasks[taskId].current++;
             }
+            scrapeTasks[taskId].status = 'completed';
+          } catch (err: any) {
+            console.error("[Bulk Scrape Fatal Error]:", err);
+            scrapeTasks[taskId].status = 'error';
+            scrapeTasks[taskId].error = err.message;
+          } finally {
+            if (browser) await browser.close();
           }
-        } catch (err) {
-          console.error("[Bulk Scrape Fatal Error]:", err);
-        } finally {
-          if (browser) await browser.close();
-        }
       },
       error: (error: any) => {
         res.status(500).json({ success: false, error: 'Gagal mem-parsing CSV: ' + error.message });

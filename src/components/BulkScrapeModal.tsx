@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Upload, FileSpreadsheet, Download, CheckCircle2, AlertTriangle, RefreshCw, Layers } from 'lucide-react';
 import Papa from 'papaparse';
 
@@ -12,7 +12,35 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<{ success: boolean; message: string; taskId?: string } | null>(null);
+  const [progress, setProgress] = useState<{current: number, total: number, status: string, error?: string} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let interval: any;
+    if (uploadResult?.success && uploadResult?.taskId) {
+      interval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/scrape-status/${uploadResult.taskId}`);
+          if (res.ok) {
+            const data = await res.json();
+            setProgress(data);
+            if (data.status === 'completed' || data.status === 'error') {
+              clearInterval(interval);
+              setIsUploading(false);
+              if (data.status === 'completed') {
+                alert(`✅ Proses scraping selesai! Berhasil memproses ${data.total} cabang. Silakan refresh halaman.`);
+              } else {
+                alert("⚠️ Terjadi kesalahan saat scraping: " + data.error);
+              }
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [uploadResult]);
 
   if (!isOpen) return null;
 
@@ -31,6 +59,7 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
       setUploadResult(null);
+      setProgress(null);
     }
   };
 
@@ -39,6 +68,7 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
 
     setIsUploading(true);
     setUploadResult(null);
+    setProgress(null);
 
     const formData = new FormData();
     formData.append('csvFile', file);
@@ -57,10 +87,11 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
       });
       if (data.success) {
         setFile(null);
+      } else {
+        setIsUploading(false);
       }
     } catch (err: any) {
       setUploadResult({ success: false, message: 'Gagal menghubungi server: ' + err.message });
-    } finally {
       setIsUploading(false);
     }
   };
@@ -70,6 +101,7 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
     
     setIsUploading(true);
     setUploadResult(null);
+    setProgress(null);
 
     try {
       const response = await fetch('/api/bulk-scrape-json', {
@@ -84,9 +116,12 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
         message: data.message || data.error,
         taskId: data.taskId
       });
+      
+      if (!data.success) {
+        setIsUploading(false);
+      }
     } catch (err: any) {
       setUploadResult({ success: false, message: 'Gagal menghubungi server: ' + err.message });
-    } finally {
       setIsUploading(false);
     }
   };
@@ -196,20 +231,37 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
           </div>
 
           {uploadResult && (
-            <div className={`p-4 rounded-xl flex items-start gap-3 border ${uploadResult.success ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
-              {uploadResult.success ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-              ) : (
-                <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-              )}
-              <div>
-                <h5 className={`text-sm font-bold ${uploadResult.success ? 'text-emerald-800' : 'text-red-800'}`}>
-                  {uploadResult.success ? 'Berhasil Masuk Antrean' : 'Upload Gagal'}
-                </h5>
-                <p className={`text-xs mt-1 ${uploadResult.success ? 'text-emerald-700' : 'text-red-700'}`}>
-                  {uploadResult.message}
-                </p>
+            <div className={`p-4 rounded-xl flex flex-col gap-3 border ${uploadResult.success ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+              <div className="flex items-start gap-3">
+                {uploadResult.success ? (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                ) : (
+                  <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                )}
+                <div className="w-full">
+                  <h5 className={`text-sm font-bold ${uploadResult.success ? 'text-emerald-800' : 'text-red-800'}`}>
+                    {progress?.status === 'completed' ? 'Proses Selesai!' : uploadResult.success ? 'Berhasil Masuk Antrean' : 'Proses Gagal'}
+                  </h5>
+                  <p className={`text-xs mt-1 ${uploadResult.success ? 'text-emerald-700' : 'text-red-700'}`}>
+                    {progress?.status === 'completed' ? `Berhasil memproses ${progress.total} cabang.` : uploadResult.message}
+                  </p>
+                </div>
               </div>
+
+              {progress && uploadResult.success && progress.status !== 'completed' && (
+                <div className="w-full mt-2">
+                  <div className="flex justify-between text-xs font-bold text-emerald-800 mb-1">
+                    <span>Sedang memproses: {progress.current} dari {progress.total} cabang</span>
+                    <span>{Math.round((progress.current / progress.total) * 100)}%</span>
+                  </div>
+                  <div className="w-full bg-emerald-200 rounded-full h-2.5 overflow-hidden">
+                    <div 
+                      className="bg-emerald-600 h-2.5 rounded-full transition-all duration-500 ease-out" 
+                      style={{ width: `${Math.max(3, (progress.current / progress.total) * 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

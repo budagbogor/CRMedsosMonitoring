@@ -1,27 +1,51 @@
 {
-  "lastUpdated": "2026-09-30T06:01:39.604Z",
+  "lastUpdated": "2026-09-30T06:16:53.091Z",
   "branches": {
     "Mobeng Brigjen Katamso": {
       "reviews": [
         {
-          "id": "rev-bjk-1",
-          "author": "Hadi Santoso",
-          "rating": 5,
-          "date": "2 minggu lalu",
-          "text": "Rating sangat pantas 5 bintang. Mekanik sangat teliti, ramah, dan estimasi biaya dijelaskan di awal.",
-          "sentiment": "positive",
-          "tags": [
-            "Rating Sempurna",
-            "Mekanik Ramah"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:33.319Z",
+          "text": "Pelayanan bagus peralatan bengkel lengkap, dan bersih..",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:33.319Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:33.319Z",
+          "text": "pelayanan memuaskan seperti servis di deler resmi harga bersaing , spart part lengkap ban ,aki ,oli ,kaki kaki mobil ,lampu juga tersedia di sini ,edukasi tentang kerusakan juga sangat terperinci ,jos  tenan 👍 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:33.319Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:33.319Z",
+          "text": "Bengkel mobil jaman now, clean, simpel, keren.\nSip rekomended.💪💪 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.549Z",
-      "meta": {
-        "rating": 5,
-        "reviewCount": 93
-      }
+      "fetchedAt": "2026-09-30T06:16:33.319Z",
+      "lastSync": "2026-09-30T06:16:33.319Z"
     },
     "Mobeng Citraland": {
       "reviews": [
@@ -48,86 +72,139 @@
     "Mobeng Ahmad Yani": {
       "reviews": [
         {
-          "id": "rev-aym-1",
-          "author": "Rizky D.",
-          "rating": 4,
-          "date": "2 minggu lalu",
-          "text": "Pengerjaan spooring balancing presisi di Kota Malang. Mekanik ramah dan profesional.",
-          "sentiment": "positive",
-          "tags": [
-            "Kota Malang",
-            "Spooring Presisi"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:37.637Z",
+          "text": "Saya istri datang ke Malang utk menyerahkan Mobil kesayangan saya Toyota RAV4 2006 utk digunakan oleh anak perempuan saya yg seoramg mahasiswi kedokteran Gigi di Un Brawijaya …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:37.637Z",
+          "text": "Pelayanan baik ruang tunggu nyaman, lengkap dan informatif harga ditunjukkan di awal",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:37.637Z",
+          "text": "Bengkel baru dengan pelayanan dan mekanik yang ramah, promo yang banyak, ruang tunggu adem plus kopi dan camilan",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.560Z",
-      "meta": {
-        "rating": 4.7,
-        "reviewCount": 280
-      }
+      "fetchedAt": "2026-09-30T06:16:37.637Z",
+      "lastSync": "2026-09-30T06:16:37.638Z"
     },
     "Mobeng BSD": {
       "reviews": [
         {
-          "id": "rev-bsd-1",
-          "author": "Ahmad S.",
-          "rating": 3,
-          "date": "1 bulan lalu",
-          "text": "Servis cukup baik dan teliti, tapi waktu tunggunya lumayan lama sekali saat akhir pekan.",
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:17.957Z",
+          "text": "Datang hari Sabtu siang untuk servis maintenance mobil HRV. Ganti oli mesin Shell Helix biru, filter oli, tune up mesin dan minta check bunyi di kaki-kaki depan. So far pelayanannya baik, ramah dan kualitas pengerjaan juga baik. Ruang …",
           "sentiment": "neutral",
-          "tags": [
-            "Waktu Tunggu"
-          ]
+          "tags": []
         },
         {
-          "id": "rev-bsd-2",
-          "author": "Tina R.",
-          "rating": 4,
-          "date": "2 bulan lalu",
-          "text": "Pengerjaan rapi dan mekanik ramah, namun ruang tunggu agak padat pas siang hari.",
-          "sentiment": "positive",
-          "tags": [
-            "Ruang Tunggu",
-            "Fasilitas"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:17.957Z",
+          "text": "Pertama ke mobeng gak nyangka pelayanan nya ramah ramah dan mekanik nya menjelaskan dengan detail  mantap",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:17.957Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:17.957Z",
+          "text": "datang kesana, rencana mau spooring aja karena mobil sedikit oleng saat di tol dengan kecepatan tinggi, lalu saat di periksa kata 2 org teknisi disana mobil saya Long Tie rod oblak dan beberapa part sudah rusak juga dan di tawarkan untuk …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:17.957Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.562Z",
-      "meta": {
-        "rating": 4.6,
-        "reviewCount": 585
-      }
+      "fetchedAt": "2026-09-30T06:15:17.957Z",
+      "lastSync": "2026-09-30T06:15:17.958Z"
     },
     "Mobeng Karawaci": {
       "reviews": [
         {
-          "id": "rev-krw-1",
-          "author": "Budi Santoso",
-          "rating": 3,
-          "date": "1 bulan lalu",
-          "text": "Pekerjaan mekanik bagus, namun komunikasi estimasi durasi selesai servis perlu lebih jelas.",
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:21.528Z",
+          "text": "Kerja cepat dan rapih, profesional, harga juga affordable..dibandingkan bengkel lain, pengerjaan profesional dan cukup seksama. Penjelasan juga bagus. Ruang tunggu juga nyaman dan bersih, recommended . Dan apa betul sticker mobeng bisa isi nitrogen free ? Boleh saya minta karena kemarin tidak ditawarkan.",
           "sentiment": "neutral",
-          "tags": [
-            "Komunikasi",
-            "Estimasi Waktu"
-          ]
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:21.528Z",
+          "text": "Terima kasih atas kepercayaanya telah berkunjung di MOBENG 🙏\nSemoga MOBENG bisa terus memberikan pelayanan terbaik untuk seluruh konsumen setia MOBENG 😊🙏 … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:21.528Z",
+          "text": "Ruang tunggunya bersih dan nyaman, ada mushola buat shalat.\nTop dah mobeng karawaci ..\nServisnya juga ok, dinjelaskan secara detail",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:21.528Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:21.528Z",
+          "text": "Tempat servis mobil yang cukup oke pelayanan dan harganya.\n\nPenjelasan dari teknisi sangat clear dan cukup membantu",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:21.528Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.567Z",
-      "meta": {
-        "rating": 4.5,
-        "reviewCount": 249
-      }
+      "fetchedAt": "2026-09-30T06:15:21.528Z",
+      "lastSync": "2026-09-30T06:15:21.528Z"
     },
     "Mobeng Cipondoh": {
       "reviews": [
         {
           "author": "Google User (Scraped)",
           "rating": 0,
-          "date": "2026-09-30T06:01:39.604Z",
+          "date": "2026-09-30T06:15:24.398Z",
           "text": "Kesini karena mau ganti ban belakang yang udh mulai botak. Kebetulan lagi ada promo trade in ban lama ke ban baru.\nRuang tunggu nyaman dan disediakan kopi dan teh. …",
           "sentiment": "neutral",
           "tags": []
@@ -135,7 +212,7 @@
         {
           "author": "Google User (Scraped)",
           "rating": 0,
-          "date": "2026-09-30T06:01:39.604Z",
+          "date": "2026-09-30T06:15:24.398Z",
           "text": "Sudah Dua Kali servis disini, harga bersahabat Dan kualitasnya terbaik, ruang tunggu nyaman ber AC Dan ada free welcome drink, jangan ragu untuk servis disini.",
           "sentiment": "neutral",
           "tags": []
@@ -143,565 +220,1172 @@
         {
           "author": "Google User (Scraped)",
           "rating": 0,
-          "date": "2026-09-30T06:01:39.604Z",
+          "date": "2026-09-30T06:15:24.398Z",
           "text": "Penyelamat! Pas hujan, sore,wiper mati, bengkel sebelumnya nolak, kalau ini langsung ngerjain dengan sepenuh hati huhu terharu bgt bgt",
           "sentiment": "neutral",
           "tags": []
         }
       ],
-      "fetchedAt": "2026-09-30T06:01:39.604Z",
-      "lastSync": "2026-09-30T06:01:39.604Z"
+      "fetchedAt": "2026-09-30T06:15:24.398Z",
+      "lastSync": "2026-09-30T06:15:24.398Z"
     },
     "Mobeng Pondok Betung": {
       "reviews": [
         {
-          "id": "rev-pbt-1",
-          "author": "Deni Pratama",
-          "rating": 4,
-          "date": "2 bulan lalu",
-          "text": "Ganti oli dan cek 20 titik sangat rapi. Cuma part filter AC mobil saya pas kosong jadi inden dulu.",
-          "sentiment": "positive",
-          "tags": [
-            "Ketersediaan Sparepart"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:27.474Z",
+          "text": "Ke mobeng karena rekomendasi teman, overall bagus, ruang tunggu jg adem. Harga promo servis ganti oli lebih murah dibanding bengkel lain.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:27.474Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:27.474Z",
+          "text": "Alhamdulillah, booking lewat CS pusat dapat free filter oli, pelayanan ramah, cepat dan harga bersaing. …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:27.474Z",
+          "text": "Spooring di sini recomended, pelayanannya ramah dan teknisinya jg udh pro biayanya standar aj kaya bengkel spooring pada umumnya dan alatnya jg oke",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:27.474Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.557Z",
-      "meta": {
-        "rating": 4.7,
-        "reviewCount": 298
-      }
+      "fetchedAt": "2026-09-30T06:15:27.474Z",
+      "lastSync": "2026-09-30T06:15:27.475Z"
     },
     "Mobeng Gading Serpong": {
       "reviews": [
         {
-          "id": "rev-gds-1",
-          "author": "Kevin L.",
-          "rating": 3,
-          "date": "1 bulan lalu",
-          "text": "Peralatan canggih dan hasil presisi, namun antrean weekend sebaiknya booking dulu via WA.",
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:30.697Z",
+          "text": "Sejak servis mobil berasa ga enak bgt kaki², padahal habis gantibsparepart². Km/l jga turun terus sejak servis. Apa karena oli merek mereka sendiri ato emg ga bener pasang²nya",
           "sentiment": "neutral",
-          "tags": [
-            "Antrean",
-            "Booking"
-          ]
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:30.697Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:30.697Z",
+          "text": "Pelayanan ramah. Penjelasan dari mekanik detail terkait part2 fast moving yg akan dinganti. Tarikan mobil terasa lebih enteng.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:30.697Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:30.697Z",
+          "text": "Karyawannya jujur nemu uang 100 rb di dalem mobil saya langsung bilang ke saya, padahal saya gatau ada uangnya ternyata... Mantep pertahankan kejujuran dan pelayanan sangat baik dan nyaman, untuk montir bagian AC mobil terimakasih..",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:30.697Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.564Z",
-      "meta": {
-        "rating": 4.6,
-        "reviewCount": 380
-      }
+      "fetchedAt": "2026-09-30T06:15:30.697Z",
+      "lastSync": "2026-09-30T06:15:30.697Z"
     },
     "Mobeng Harapan Indah": {
       "reviews": [
         {
-          "id": "rev-hi-1",
-          "author": "Rudi Hartono",
-          "rating": 4,
-          "date": "3 minggu lalu",
-          "text": "Mekanik sangat jujur menjelaskan bagian yang perlu diganti dan tidak. Harga bersaing.",
-          "sentiment": "positive",
-          "tags": [
-            "Transparansi",
-            "Mekanik Jujur"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:33.731Z",
+          "text": "Kesini untuk ganti ban, tempatnya oke dan nyaman untuk nunggu. Dapat gratis kopi dan teh, tinggal seduh sendiri. Tersedia juga tempat bermain anak jika membawa anak kecil. Pelayanan yang diberikan memuaskan dan informatif. Terima kasih!",
+          "sentiment": "neutral",
+          "tags": []
         },
         {
-          "id": "rev-hi-2",
-          "author": "Siti Rahma",
-          "rating": 3,
-          "date": "2 bulan lalu",
-          "text": "Pengerjaan tune up oke, namun waktu tunggu pendaftaran agak lama di jam sibuk.",
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:33.731Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 \nTerimakasih …",
           "sentiment": "neutral",
-          "tags": [
-            "Waktu Tunggu"
-          ]
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:33.731Z",
+          "text": "Mekanik gak profesional, saya service di sini sangat kecewa dengan pelayannya, cerita saya selasa 25 Agustus 2026 service, lalu saya di jelaskan komponen apa saja yg harus di ganti dan estimasi harganya, setalh itu mekanik nya tanya ada …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:33.731Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:33.731Z",
+          "text": "First impression : secara bengkel dan ruang tunggu bersih dan rapi serta ada ruang ber-AC sehingga cukup nyaman plus minum/ngopi juga, proses ganti ban 2 pcs dan spooring balancing yg secara waktu cukup lama masuk jam 11.30 - 14.00 wib …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:33.731Z",
+          "text": "Oke, terima kasih.",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.563Z",
-      "meta": {
-        "rating": 4.6,
-        "reviewCount": 427
-      }
+      "fetchedAt": "2026-09-30T06:15:33.731Z",
+      "lastSync": "2026-09-30T06:15:33.732Z"
     },
     "Mobeng Jemursari": {
       "reviews": [
         {
-          "id": "rev-jms-1",
-          "author": "Bayu Aji",
-          "rating": 4,
-          "date": "1 bulan lalu",
-          "text": "Pelayanan profesional khas Mobeng Surabaya, ruang tunggu dingin dan nyaman.",
-          "sentiment": "positive",
-          "tags": [
-            "Lounge AC",
-            "Pelayanan"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:36.684Z",
+          "text": "Mekanik tidak profesional, benerin kaki-kaki sdh ganti beberapa part dan klr banyak uang malah makin parah suaranya, kembali dijanjikan hari sabtu pagi-pagi dtg dibilang gak ada alatnya, kena ini itu, hrs ganti part lagi, sekelas mobeng …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:36.684Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:36.684Z",
+          "text": "Pertama kalinya servis ke mobeng krn bengkel resminya tutup (servis rutin, ganti oli, ganti kampas rem), pelayanan bagus, hasilnya tarikan gas terasa lebih ringan dari setelah servis di bengkel resminya. akan dicoba lagi servis yg kedua nanti apakah pelayanan dan hasilnya masih konsisten",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:36.684Z",
+          "text": "Mekanik kurang berpengalaman. Masuk jam 9. Pemggantian shock depan innova reborn dan bleeding rem. Sy minta kesanggupan waktu jam 12 slesai dan pihak mobeng menyanggupi. Smp sy tiba jam 12. Baru 1 shock yg di kerjakan dan molor wakti hingga …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:36.684Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.559Z",
-      "meta": {
-        "rating": 4.7,
-        "reviewCount": 295
-      }
+      "fetchedAt": "2026-09-30T06:15:36.684Z",
+      "lastSync": "2026-09-30T06:15:36.685Z"
     },
     "Mobeng Cinere": {
       "reviews": [
         {
-          "id": "rev-cnr-1",
-          "author": "Fajar Nugraha",
-          "rating": 3,
-          "date": "1 bulan lalu",
-          "text": "Servis ganti oli cepat, tapi tempat tunggu luar agak panas kalau siang hari.",
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:52.699Z",
+          "text": "Spooring disini dengan hasil yang baik. Pegawainya ramah dan profesional. Ruangan bengkel bersih dan rapih. Ruang tunggu nyaman dan bersih. Ada toilet dan juga musholla untuk 1 orang. Untuk biaya spooring standar di 150ribu (harga September …",
           "sentiment": "neutral",
-          "tags": [
-            "Fasilitas",
-            "Kenyamanan"
-          ]
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:52.699Z",
+          "text": "Saya baru pertama kali ke Mobeng Cinere, mau coba Oli X-Ten yang katanya pakai teknologi mutahir dan bisa 15kkm untuk Proton Exora, ambil Paket Ganti Oli 578k …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:52.699Z",
+          "text": "Senang bisa menjadi pelanggan Mobeng. Crew yang ramah dan penjelasan  kondisi mobil serta biaya didiskusin sebelum pengerjaan. Trims",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:52.699Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.563Z",
-      "meta": {
-        "rating": 4.6,
-        "reviewCount": 410
-      }
+      "fetchedAt": "2026-09-30T06:15:52.699Z",
+      "lastSync": "2026-09-30T06:15:52.699Z"
     },
     "Mobeng Kupang": {
       "reviews": [
         {
-          "id": "rev-kpg-1",
-          "author": "Eko Prasetyo",
-          "rating": 4,
-          "date": "3 minggu lalu",
-          "text": "Mekanik handal dan penjelasannya mudah dipahami. Ruang tunggu AC sangat membantu.",
-          "sentiment": "positive",
-          "tags": [
-            "Mekanik Informatif"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:55.541Z",
+          "text": "Pelayanan sangat memuaskan, bahkan dijelaskan secara detail..\nTop dah walaupun cmn ganti oli pelayanan top 👍 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:55.541Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:55.541Z",
+          "text": "Top notch! Udah 3x ini setiap sebelum Lebaran, service RMB di Mobeng. 1x cabang lain (kurang recommended), 2x cabang KUPANG INDAH. Hehehe …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:55.541Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:55.541Z",
+          "text": "Tidak pantas untuk menjadi bengkel tidak siap 24 jam dan mereka tidak melakukan apa pun ke mobil yg di cek bahkan menambahkan filter ac untuk diganti tapi tidak diganti bahkan selang2 nya dibiarkan tidak terkunci, mau di protes jam 10 malam …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:55.541Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.561Z",
-      "meta": {
-        "rating": 4.7,
-        "reviewCount": 350
-      }
+      "fetchedAt": "2026-09-30T06:15:55.541Z",
+      "lastSync": "2026-09-30T06:15:55.541Z"
     },
     "Mobeng Galuhmas": {
       "reviews": [
         {
-          "id": "rev-glm-1",
-          "author": "Agus Setiawan",
-          "rating": 4,
-          "date": "1 bulan lalu",
-          "text": "Sangat membantu warga Karawang, servis cepat dan garansi pengerjaan jelas.",
-          "sentiment": "positive",
-          "tags": [
-            "Garansi",
-            "Cepat"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:58.537Z",
+          "text": "Tempatnya rekomendasi untuk ganti oli dan servis ringan,\n\nMobil di cek secara mendetail dan montir sangat komunikatif, harga relatif …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:58.537Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:58.537Z",
+          "text": "Mekaniknya bagus mudah dimengerti saat jelasin parts yg harus diganti dan enaknya gk maksa harus ganti, ruang tunggunya adem dan ada kopi. Jarang ada bengkel yg ruang tunggunya nyaman ky di dealer. Pelayananya oke",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:58.537Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:15:58.537Z",
+          "text": "Tempat ganti oli dan servis mobil. Karyawannya ramah dan detail dalam memberikan info tentang kondisi kendaraan …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.566Z",
-      "meta": {
-        "rating": 4.6,
-        "reviewCount": 310
-      }
+      "fetchedAt": "2026-09-30T06:15:58.537Z",
+      "lastSync": "2026-09-30T06:15:58.537Z"
     },
     "Mobeng Jababeka": {
       "reviews": [
         {
-          "id": "rev-jbk-1",
-          "author": "Rian Hidayat",
-          "rating": 4,
-          "date": "2 bulan lalu",
-          "text": "Tempat servis andalan mobil operasional kantor di Cikarang. Nota dan kuitansi rapi.",
-          "sentiment": "positive",
-          "tags": [
-            "Billing Transparan"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:01.522Z",
+          "text": "tempatnya bersih,nyaman serta mekanik mekanik yang mengerjakan juga gercep mantap pokoknya josjis👍 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:01.522Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:01.522Z",
+          "text": "Tanggal 21 mei 2025 saya datang untuk melakukan spooring dengan keluhan ban kanan makan sisi dalam..\nSetelah spooring mobil jadi lari ke kiri (Banting Kiri) …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:01.522Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:01.522Z",
+          "text": "Paket tune up + ganti oli mobil mbrio Rp 850rebuan...  Ruang tunggunya ok, adem, free coffee, free wifi... …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.558Z",
-      "meta": {
-        "rating": 4.7,
-        "reviewCount": 340
-      }
+      "fetchedAt": "2026-09-30T06:16:01.522Z",
+      "lastSync": "2026-09-30T06:16:01.523Z"
     },
     "Mobeng Kopo": {
       "reviews": [
         {
-          "id": "rev-kpo-1",
-          "author": "Dadan Ramdani",
-          "rating": 3,
-          "date": "1 bulan lalu",
-          "text": "Pekerjaan rapi tapi harus sabar macet di jalan Kopo untuk sampai ke lokasi.",
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:04.558Z",
+          "text": "Servis dan pengecekannya maksimal saya merasa puas dan apabila ada kekurangan teknisinya akan mengulang pengecekan lebih teliti lagi dan hasilnya memuaskan dan kalo ada pergantian spertpart kompirmasi dan berikut harganya\nMantap",
           "sentiment": "neutral",
-          "tags": [
-            "Aksesibilitas"
-          ]
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:04.558Z",
+          "text": "Ganti Oli lengkap dgn pengecekan 12item, tempat nyaman, bersih, ac dingin. Disediakan kopi/teh gratis sepuasnya. Setelah service diberikan informasi kalau ada yg hrs diperbaiki atau diganti. Enak buat diajak konsultasi juga. Keep the good work.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:04.558Z",
+          "text": "Baru pernah nyoba service di sini. So far pelayanan nya sih bagus dan tim nya ramah-ramah.  Buat oli pake xten juga baru pernah nyoba. Katanya sih lebih awet. Setelah beberapa hari dipake rasa tarikannya agak lebih berat, mungkin lebih …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.566Z",
-      "meta": {
-        "rating": 4.5,
-        "reviewCount": 365
-      }
+      "fetchedAt": "2026-09-30T06:16:04.558Z",
+      "lastSync": "2026-09-30T06:16:04.558Z"
     },
     "Mobeng Sunter": {
       "reviews": [
         {
-          "id": "rev-snt-1",
-          "author": "Michael W.",
-          "rating": 4,
-          "date": "3 minggu lalu",
-          "text": "Bengkel langganan di Sunter. Mekanik teliti cek kampas rem dan minyak rem.",
-          "sentiment": "positive",
-          "tags": [
-            "Servis Rem",
-            "Teliti"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:07.590Z",
+          "text": "first-time service di mobeng sunter dengan mas fiqri pelayanannya sangat memuskan, penyampaian baik, customer servicenya juga disampaikan dengan detail, cara perawatannya\npokonya oke banget dehh",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:07.590Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:07.590Z",
+          "text": "Servis kaki sporing pelayananya cepat tidak antri lama, pengerjaan detail.pokoknya mantap.sukses terus",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:07.590Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:07.590Z",
+          "text": "First time service disini karena lokasi tidak jauh dari kantor.\nPelayanan sangat ok. CS informasikan estimasi harga dan part apa yang perlu diganti selain ganti oli. Yang saya suka karena team mekanik sangat jujur, tadinya …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.562Z",
-      "meta": {
-        "rating": 4.6,
-        "reviewCount": 520
-      }
+      "fetchedAt": "2026-09-30T06:16:07.590Z",
+      "lastSync": "2026-09-30T06:16:07.591Z"
     },
     "Mobeng Tole Iskandar": {
       "reviews": [
         {
-          "id": "rev-tle-1",
-          "author": "Rizky F.",
-          "rating": 4,
-          "date": "1 bulan lalu",
-          "text": "Pelayanan prima di Depok Timur. Pilihan oli lengkap dan harga terstandar nasional.",
-          "sentiment": "positive",
-          "tags": [
-            "Pilihan Oli",
-            "Harga Standar"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:10.764Z",
+          "text": "Hari sabtu 25 April 2026 jam 7 malam ibu saya kesana dengan kendala 1 baut roda belakang kiri susah untuk dibuka, sudah bilang ke mekaniknya kalau tidak bisa yaudah pasang lagi aja biar dibawa pulang, tapi mekaniknya bilang bahaya kalau …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:10.764Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:10.765Z",
+          "text": "Pelayanan nya oke,harga cukup bersaing, penjelasan apa yang harus di ganti di sampaikan dengan baik",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:10.765Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:10.765Z",
+          "text": "Untuk tempat nyaman dan penjelasan pengelola cukup beralasan, hanya saja sekedar saran... jika ganti oli atau penggantian part apapun itu, mestinya diberikan informasi tempat/botol oli dan part yg sdh di gantinya .... ini akan lebih memberikan nilai lebih kepercayaan customer kepada mobeng.... semoga kedepan lebih baik lagi....",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:10.765Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.557Z",
-      "meta": {
-        "rating": 4.7,
-        "reviewCount": 490
-      }
+      "fetchedAt": "2026-09-30T06:16:10.765Z",
+      "lastSync": "2026-09-30T06:16:10.765Z"
     },
     "Mobeng Lenteng Agung": {
       "reviews": [
         {
-          "id": "rev-lag-1",
-          "author": "Dian Permana",
-          "rating": 4,
-          "date": "2 bulan lalu",
-          "text": "Lokasi mudah dilihat dari jalan raya. Mekanik cekatan dan informatif.",
-          "sentiment": "positive",
-          "tags": [
-            "Mekanik Cekatan"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:13.826Z",
+          "text": "pelayanan cepat dan ramah dapat diskon. selain oli xten ada juga pilihan oli lain, kalo service menyeluruh sebaiknya ke beres  tapi di mobeng ini ok juga bisa cek ban dan kaki-kaki, teknisinya ok bisa tau kondisi tie rod. dikasih tahu bahwa …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:13.826Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:13.826Z",
+          "text": "Sejak carfix g ada sempet bingung nyari bengkel mobil yg murah tp bagus. Dan pertama nyoba disini bnrn sesuai tagline ny mobil rasa baru 😁 finally jd langganan kesini deh …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:13.826Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:13.826Z",
+          "text": "Servis di mobeng lenteng emang top... Bener2 rasa mesin baru... Tarikan enteng, mesin lebih halus... Harga juga kompetitif.. Sukses terus mobeng",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:13.826Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.566Z",
-      "meta": {
-        "rating": 4.6,
-        "reviewCount": 340
-      }
+      "fetchedAt": "2026-09-30T06:16:13.826Z",
+      "lastSync": "2026-09-30T06:16:13.827Z"
     },
     "Mobeng Mustika Jaya": {
       "reviews": [
         {
-          "id": "rev-msj-1",
-          "author": "Bambang S.",
-          "rating": 4,
-          "date": "1 bulan lalu",
-          "text": "Bengkel bersih dan alat-alat modern. Sangat membantu warga Mustika Jaya Bekasi.",
-          "sentiment": "positive",
-          "tags": [
-            "Fasilitas Bersih"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:17.045Z",
+          "text": "Tempat nunggunya nyaman dan pelayananya bagus, mekanik jelas bgt ngejelasinya. Perawatan mobil jadi gk berasa lama karena tempat tunggunya adem dan ada kopi",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:17.045Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:17.045Z",
+          "text": "Udah kedua kalinya service disini, biaya murah tapi kualitas terjamin, mobil jadi kaya baru lagi, mantap lah pokoknya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:17.045Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:17.045Z",
+          "text": "Kecewa dg pelayanan dsini sebagai pelanggan setia disini baru kali ini merasakan benar2 kecewa,,karyawannya kebanyakan nongkrong di belakang bahkan saya service dsini mobil di tes hampir satu jam baru balik lagi dan saya komplain keras trhadap mobeng,wajar sekarang sepi dg karakter karyawan seperti ini amit2 balik kesini lagi.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:17.045Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.558Z",
-      "meta": {
-        "rating": 4.7,
-        "reviewCount": 215
-      }
+      "fetchedAt": "2026-09-30T06:16:17.045Z",
+      "lastSync": "2026-09-30T06:16:17.045Z"
     },
     "Mobeng Jati Asih": {
       "reviews": [
         {
-          "id": "rev-jta-1",
-          "author": "Indra Kusuma",
-          "rating": 4,
-          "date": "3 minggu lalu",
-          "text": "Ganti oli dan filter cepat, ada free cek 20 komponen mobil.",
-          "sentiment": "positive",
-          "tags": [
-            "Free Check 20 Titik"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:20.307Z",
+          "text": "Yg diceklis di buku nya dengan actual nya ga sesuai, foglamp masih mati tapi lampu2 diceklis baik, washer wiper mati tapi dicek lis baik, jd ga percaya ini beneran di servis apa ngga, sayang ny saya g ngerti cek mesin, udah bayar mahal pula sampe sejuta lebih tp malah zonk.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:20.307Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:20.307Z",
+          "text": "Good place untuk checkup rutin kendaraan. Sudah beberapa kali selalu ramah dan welcome saat customer datang. Konfirmasi kalo ada opsi yg sekiranya perlu diganti atau tidak. Kalo masih aman dipakai sampai next service dikasih tau. Semoga …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:20.307Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:20.307Z",
+          "text": "Setelah di Sporing tetep msh kurang oke, dan katanya kampas rem mbl saya sudah tipis, ternyata saat cek ke bengkel resmi masih tebal. menurut saya payah. lokasi memang oke, pekerja muda, tp jauh dr keprofesionalan.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:20.307Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.564Z",
-      "meta": {
-        "rating": 4.6,
-        "reviewCount": 380
-      }
+      "fetchedAt": "2026-09-30T06:16:20.307Z",
+      "lastSync": "2026-09-30T06:16:20.307Z"
     },
     "Mobeng MERR": {
       "reviews": [
         {
-          "id": "rev-mrr-1",
-          "author": "Ahmad Rizky",
-          "rating": 5,
-          "date": "2 minggu lalu",
-          "text": "Lokasi strategis di MERR Surabaya. Pelayanan ramah, mekanik jujur jelaskan kondisi sparepart.",
-          "sentiment": "positive",
-          "tags": [
-            "Lokasi Strategis",
-            "Mekanik Jujur"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:23.135Z",
+          "text": "Pros: Tempat servis ganti oli mobil yang cukup cepat dan bisa servis lainnya (ganti ban, tie rod,rem, spooring dan balancing ban) untuk mobil dengan jenis dan merk yang umum digunakan di Indonesia, penjelasan cukup baik dari servis advisor. …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:23.135Z",
+          "text": "First time nyobain t4 bengkel ini krn t4 bengkel sebelum''na kurang nyaman. Gk cuma bersih,nyaman, free bisa bikin kopi, teh. Dapat buku perawatan. Pokok'na top lah dr segi pelayanan.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:23.135Z",
+          "text": "Hari ini , minta tolong cek kerembesan oli mesin ,karena takut bocor..\n(ganti oli nya nggak di mobeng)\nKita di layani sangat Rama Dan grecep... …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:23.135Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.555Z",
-      "meta": {
-        "rating": 4.8,
-        "reviewCount": 260
-      }
+      "fetchedAt": "2026-09-30T06:16:23.135Z",
+      "lastSync": "2026-09-30T06:16:23.136Z"
     },
     "Mobeng Hankam": {
       "reviews": [
         {
-          "id": "rev-hkm-1",
-          "author": "Surya K.",
-          "rating": 4,
-          "date": "1 bulan lalu",
-          "text": "Pelayanan sangat baik, hasil tune up injeksi tarikan mesin jadi enteng kembali.",
-          "sentiment": "positive",
-          "tags": [
-            "Hasil Tune Up"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:26.115Z",
+          "text": "Cukup menyenangkan pengalaman service disini. Harganya oke, pelayanan ok dan fasilitas kayak coffee, toilet, mushola dan ruang tunggunya juga ok. Montir ga banyak rese 👍🏻 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:26.115Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:26.115Z",
+          "text": "Mantap!!\n\nBuka sampai pukul 21.00 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:26.115Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya \nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:26.115Z",
+          "text": "Cs nya Komunikatif, pengerjaannya Teliti, cepat, Teknisi nya Ramah2, ruang tunggu nyaman, bersih, ada kopi & Teh, Rekomendasi service di sini",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:26.115Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya \nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.556Z",
-      "meta": {
-        "rating": 4.8,
-        "reviewCount": 430
-      }
+      "fetchedAt": "2026-09-30T06:16:26.115Z",
+      "lastSync": "2026-09-30T06:16:26.116Z"
     },
     "Mobeng Cileungsi": {
       "reviews": [
         {
-          "id": "rev-clg-1",
-          "author": "Yudi P.",
-          "rating": 4,
-          "date": "2 bulan lalu",
-          "text": "Pelayanan memuaskan, tempat ganti ban dan balancing presisi di area Cileungsi.",
-          "sentiment": "positive",
-          "tags": [
-            "Ganti Ban",
-            "Balancing"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:28.900Z",
+          "text": "First time nyoba paket ganti oli + service berkala disni, mobil Avanza G manual 2017. Dibantu mas mas cashier dijelaskan paket2 servicenya dengan sangat baik. Mekanik juga enak diajak diskusi perihal permasalahan dimobil saya, ada garansi …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:28.900Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:28.900Z",
+          "text": "Saya service Disni agak trauma ,\nSetiap service bw mobil yg berbeda suruh ganti busi mlu  udh 3x sy perhatiin hadeuh",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:28.900Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:28.900Z",
+          "text": "Menunggu lama hanya untuk ganti oli\nPadahal saya tidak yang datang belakangan\nSetelah 2,5 jam belum ada kejelasan …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:28.900Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.567Z",
-      "meta": {
-        "rating": 4.5,
-        "reviewCount": 290
-      }
+      "fetchedAt": "2026-09-30T06:16:28.900Z",
+      "lastSync": "2026-09-30T06:16:28.900Z"
     },
     "Mobeng Duren Sawit": {
       "reviews": [
         {
-          "id": "rev-ds-1",
-          "author": "Hendra Wijaya",
-          "rating": 4,
-          "date": "3 minggu lalu",
-          "text": "Bengkel baru terpercaya di Jakarta Timur. Pendaftaran digital tertib dan mekanik profesional.",
-          "sentiment": "positive",
-          "tags": [
-            "Pendaftaran Tertib"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:30.473Z",
+          "text": "Tanggal 3/05/2026 kesini nyobai ambil paket service dan ganti oli. benggkelnya bersih tempat tunggu nyaman.. dan dijelaskan dengan baik terkait kekurangan dan apa yang kedepannya dilakukan dan penjelasannya masuk akal apa adanya, Teknisi …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:30.473Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:30.473Z",
+          "text": "pelayanan cepat dan detil, harga terjangkau dan dapat diskon gede lumayan bgt. bisa ditunggu, tempat tunggu nyaman juga. mekaniknya ramah dan menjelaskan secara rinci. sebelum tindakan akan ditanya dulu persetujuan ke owner mobil, jadi dipastikan sesuai. good job 👍🏻 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:30.473Z",
+          "text": "service oke, staff2nya juga ramah.. ruang tunggunya bersih & nyaman kg buat tunggu..  pengerjaan mobil juga ga lama.. thankz mobeng",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:30.473Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.553Z",
-      "meta": {
-        "rating": 4.9,
-        "reviewCount": 110
-      }
+      "fetchedAt": "2026-09-30T06:16:30.473Z",
+      "lastSync": "2026-09-30T06:16:30.474Z"
     },
     "Mobeng Mulyosari": {
       "reviews": [
         {
-          "id": "rev-mly-1",
-          "author": "Tommy S.",
-          "rating": 5,
-          "date": "1 bulan lalu",
-          "text": "Cabang Mulyosari Surabaya sangat bersih. Pelayanan mekanik sigap dan pengecekan mobil detail.",
-          "sentiment": "positive",
-          "tags": [
-            "Pelayanan Memuaskan",
-            "Outlet Bersih"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:34.607Z",
+          "text": "Kalau ada bintang 10 mgkin tak kasih bintang 10.. Staff nya ramah ramah banget. Dtng langsung di sambut dijelaskan semua dgn detail... Kl ada yg perlu diganti diganti kalau bisa di akal ya di akal.. G perlu harus beli ini itu.. Untuk harga …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:34.607Z",
+          "text": "sebelum pengerjaan, saya sudah diinformasikan estimasi total biaya servis dan ganti oli secara jelas.. jika harga kurang sesuai, diberikan opsi lain yang bisa dipilih.. sangat transparan dan profesional",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:34.607Z",
+          "text": "Pelayanan ramah dan Memuaskan..Tempat nyaman..bawa anak2 juga bisa..full AC free wifi free kopi teh dll..banyak diskon.. pelayanan superr mantap..pokoknya recommended banget..tidak mengecewakan..harga tidak menguras kantong",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.550Z",
-      "meta": {
-        "rating": 5,
-        "reviewCount": 85
-      }
+      "fetchedAt": "2026-09-30T06:16:34.607Z",
+      "lastSync": "2026-09-30T06:16:34.608Z"
     },
     "Mobeng Cemengkalang": {
       "reviews": [
         {
-          "id": "rev-cmk-1",
-          "author": "Ahmad Surya",
-          "rating": 5,
-          "date": "1 bulan lalu",
-          "text": "Outlet baru di Sidoarjo, fasilitas sangat bersih dan proses servis cepat.",
-          "sentiment": "positive",
-          "tags": [
-            "Outlet Bersih",
-            "Servis Cepat"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:38.837Z",
+          "text": "Baru pertama service di mobeng,\nSaya sangat takjub dengan pelayanan yang transparansi dan harga terjangkau dengan banyak promo, serta ruang tunggu yang nyaman",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:38.837Z",
+          "text": "Sangat puas pelayanan di mobeng cemengkalang karena tempat tunggu nyaman dan luas",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:38.837Z",
+          "text": "Pelayanan ramah. Dapat diskon juga. Tapi agak lama, mungkin karena baru jadi banyak yg antri.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:38.837Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.552Z",
-      "meta": {
-        "rating": 5,
-        "reviewCount": 25
-      }
+      "fetchedAt": "2026-09-30T06:16:38.837Z",
+      "lastSync": "2026-09-30T06:16:38.838Z"
     },
     "Mobeng Kupang Surabaya": {
       "reviews": [
         {
-          "id": "rev-kps-1",
-          "author": "Siti Rahmawati",
-          "rating": 4,
-          "date": "3 minggu lalu",
-          "text": "Lokasi Surabaya Barat mudah dijangkau, ganti oli dan cek aki sangat cepat.",
-          "sentiment": "positive",
-          "tags": [
-            "Surabaya Barat",
-            "Cepat"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:41.527Z",
+          "text": "Pelayanan sangat memuaskan, bahkan dijelaskan secara detail..\nTop dah walaupun cmn ganti oli pelayanan top 👍 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:41.527Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:41.527Z",
+          "text": "Top notch! Udah 3x ini setiap sebelum Lebaran, service RMB di Mobeng. 1x cabang lain (kurang recommended), 2x cabang KUPANG INDAH. Hehehe …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:41.527Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:41.527Z",
+          "text": "Tidak pantas untuk menjadi bengkel tidak siap 24 jam dan mereka tidak melakukan apa pun ke mobil yg di cek bahkan menambahkan filter ac untuk diganti tapi tidak diganti bahkan selang2 nya dibiarkan tidak terkunci, mau di protes jam 10 malam …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:41.527Z",
+          "text": "Halo kak , Mohon maaf atas ketidak nyamanannya ya kak , untuk kendala yang di alami bisa dibantu sampaikan ke layanan konsumen MOBENG dinomor Whatsapp : 081290699681 (Chat Only ) … Lainnya",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.561Z",
-      "meta": {
-        "rating": 4.7,
-        "reviewCount": 350
-      }
+      "fetchedAt": "2026-09-30T06:16:41.527Z",
+      "lastSync": "2026-09-30T06:16:41.528Z"
     },
     "Mobeng Manukan": {
       "reviews": [
         {
-          "id": "rev-mnk-1",
-          "author": "Dian W.",
-          "rating": 5,
-          "date": "2 minggu lalu",
-          "text": "Servis sangat cepat dan mekanik informatif. Pilihan oli lengkap untuk area Benowo Surabaya.",
-          "sentiment": "positive",
-          "tags": [
-            "Mekanik Informatif"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:44.763Z",
+          "text": "Pelayanan ramah mekanik berpengalaman, ruang tunggu bersih dan nyaman, alat modern jadi cocok untuk perawatan mobil saya.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:44.763Z",
+          "text": "Rekomendasi bengkel Mobil dgn harga terjangkau, pelayanan bagus, mekanik profesional dan peralatan modern ... TOP",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:44.763Z",
+          "text": "Congratulation atas pembukaan MOBENG cabang Manukan Surabaya...\nSukses selalu 🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.550Z",
-      "meta": {
-        "rating": 5,
-        "reviewCount": 45
-      }
+      "fetchedAt": "2026-09-30T06:16:44.763Z",
+      "lastSync": "2026-09-30T06:16:44.764Z"
     },
     "Mobeng Merr Surabaya": {
       "reviews": [
         {
-          "id": "rev-mrs-1",
-          "author": "Dewi Lestari",
-          "rating": 4,
-          "date": "1 bulan lalu",
-          "text": "Fasilitas lounge bersih dan nyaman, mekanik sangat teliti menjelaskan kondisi ban & rem.",
-          "sentiment": "positive",
-          "tags": [
-            "Lounge Nyaman",
-            "Teliti"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:47.385Z",
+          "text": "Pros: Tempat servis ganti oli mobil yang cukup cepat dan bisa servis lainnya (ganti ban, tie rod,rem, spooring dan balancing ban) untuk mobil dengan jenis dan merk yang umum digunakan di Indonesia, penjelasan cukup baik dari servis advisor. …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:47.385Z",
+          "text": "First time nyobain t4 bengkel ini krn t4 bengkel sebelum''na kurang nyaman. Gk cuma bersih,nyaman, free bisa bikin kopi, teh. Dapat buku perawatan. Pokok'na top lah dr segi pelayanan.",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:47.385Z",
+          "text": "Hari ini , minta tolong cek kerembesan oli mesin ,karena takut bocor..\n(ganti oli nya nggak di mobeng)\nKita di layani sangat Rama Dan grecep... …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:47.385Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.555Z",
-      "meta": {
-        "rating": 4.8,
-        "reviewCount": 260
-      }
+      "fetchedAt": "2026-09-30T06:16:47.385Z",
+      "lastSync": "2026-09-30T06:16:47.386Z"
     },
     "Mobeng Pandegiling": {
       "reviews": [
         {
-          "id": "rev-pdg-1",
-          "author": "Budi Santoso",
-          "rating": 4,
-          "date": "2 minggu lalu",
-          "text": "Lokasi Surabaya Pusat sangat strategis. Ganti ban dan balancing cepat tanpa antre lama.",
-          "sentiment": "positive",
-          "tags": [
-            "Surabaya Pusat",
-            "Ganti Ban Cepat"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:50.288Z",
+          "text": "Pelayanan ramah. Beli pas lagi grand opening jadi banyak promonya. Gratis pasang.memuaskan banget.\nTempat e besar bagus nyaman gratis kopi teh. Ganti ole, service, ban dll udah lwngkap.Rekomendasi banget",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:50.288Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:50.288Z",
+          "text": "pengalaman menyenangkan bisa service di mobeng pelayanan sangat baik dan juga mekaniknya ramah ramah",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:50.288Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:50.288Z",
+          "text": "Top service, pelayanan ramah, bisa di tunggu ada kopi & teh gratis",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.554Z",
-      "meta": {
-        "rating": 4.9,
-        "reviewCount": 140
-      }
+      "fetchedAt": "2026-09-30T06:16:50.288Z",
+      "lastSync": "2026-09-30T06:16:50.288Z"
     },
     "Mobeng Taman Waru": {
       "reviews": [
         {
-          "id": "rev-tmw-1",
-          "author": "Fauzi Setyawan",
-          "rating": 5,
-          "date": "3 minggu lalu",
-          "text": "Sangat membantu warga Sepanjang & Taman Sidoarjo. Estimasi nota jelas sebelum pengerjaan.",
-          "sentiment": "positive",
-          "tags": [
-            "Nota Jelas",
-            "Transparan"
-          ]
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:53.090Z",
+          "text": "Pelayanan sangat ok banget dan harga bersahabat banyak diskon, ruang tunggu ber AC terimakasih mobeng\nSukses selalu",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:53.090Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:53.090Z",
+          "text": "Mantap pelayanannya, tempatnya bersih dan staff nya ramah. Langganan..",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:53.090Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:53.090Z",
+          "text": "Tempat servis mobil rekomendasi pelayanannya bagus\nGratis pengecekan\nPenjelasan dari mekanik mudah dipahami penjelasannya detail",
+          "sentiment": "neutral",
+          "tags": []
+        },
+        {
+          "author": "Google User (Scraped)",
+          "rating": 0,
+          "date": "2026-09-30T06:16:53.090Z",
+          "text": "Halo kak , Terimakasih atas review dan kunjungannya ya\nKami tunggu kembali kedatangannya ya kak 😊🙏 …",
+          "sentiment": "neutral",
+          "tags": []
         }
       ],
-      "fetchedAt": "20 September 2026, 19.41 WIB",
-      "lastSync": "2026-09-20T12:41:01.552Z",
-      "meta": {
-        "rating": 5,
-        "reviewCount": 65
-      }
+      "fetchedAt": "2026-09-30T06:16:53.090Z",
+      "lastSync": "2026-09-30T06:16:53.091Z"
     }
   }
 }
