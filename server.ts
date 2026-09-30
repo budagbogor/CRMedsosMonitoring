@@ -377,19 +377,33 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
         }
       });
 
-      // Try to extract overall rating and review count from the page text
+      // Try to extract overall rating and review count from the page
       let overallRating = 0;
       let totalReviewCount = 0;
       
       try {
-        // Find text like "4.5 (93)" or "4,5 (93 ulasan)" in the document
-        // Look in headings or main info areas first
-        const mainText = document.body.innerText;
-        // Regex looks for "4.5" or "4,5" followed by optional spaces/text, then "(93)" or "(93 reviews)"
-        const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
-        if (match) {
-          overallRating = parseFloat(match[1].replace(',', '.'));
-          totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+        // Find rating via aria-label
+        const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+        if (ratingEl) {
+          const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+          if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+        }
+        
+        // Find review count via aria-label
+        const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+        if (countEl) {
+          const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+          if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
+        }
+
+        // Fallback to text matching if not found
+        if (!overallRating || !totalReviewCount) {
+          const mainText = document.body.innerText;
+          const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+          if (match) {
+            if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
+            if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+          }
         }
       } catch (e) {}
 
@@ -496,10 +510,28 @@ app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (
                 let overallRating = 0;
                 let totalReviewCount = 0;
                 try {
-                  const match = document.body.innerText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
-                  if (match) {
-                    overallRating = parseFloat(match[1].replace(',', '.'));
-                    totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+                  // Find rating via aria-label
+                  const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+                  if (ratingEl) {
+                    const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+                    if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+                  }
+                  
+                  // Find review count via aria-label
+                  const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+                  if (countEl) {
+                    const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+                    if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
+                  }
+
+                  // Fallback to text matching if not found
+                  if (!overallRating || !totalReviewCount) {
+                    const mainText = document.body.innerText;
+                    const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+                    if (match) {
+                      if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
+                      if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+                    }
                   }
                 } catch (e) {}
 
