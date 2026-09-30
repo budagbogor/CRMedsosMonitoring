@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Sparkles, Building2, Download, Printer, RefreshCw, Cpu, Layers, BellRing, Mail } from 'lucide-react';
+import { Search, Sparkles, Building2, Download, Printer, RefreshCw, Cpu, Layers, BellRing, Mail, FileSpreadsheet } from 'lucide-react';
 import { AIConfig } from '../types';
 
 interface HeaderProps {
@@ -10,6 +10,7 @@ interface HeaderProps {
   aiConfig: AIConfig;
   onOpenAISettings: () => void;
   onOpenCSAutomation: () => void;
+  onOpenBulkScrape?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   aiConfig,
   onOpenAISettings,
   onOpenCSAutomation,
+  onOpenBulkScrape,
 }) => {
   const [searchInput, setSearchInput] = useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -119,6 +121,18 @@ export const Header: React.FC<HeaderProps> = ({
               <BellRing className="w-3.5 h-3.5 text-amber-600" />
               <span className="truncate max-w-[120px] sm:max-w-none">
                 Email CS & Otomasi
+              </span>
+            </button>
+
+            {/* Bulk Scrape Button */}
+            <button
+              onClick={onOpenBulkScrape}
+              title="Bulk Scrape Cabang dari CSV"
+              className="inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg bg-green-100/80 hover:bg-green-50 text-green-800 border border-green-500/50 transition-all gap-1.5 shadow-md ring-1 ring-green-500/20"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-green-600" />
+              <span className="truncate max-w-[120px] sm:max-w-none">
+                Bulk Scrape
               </span>
             </button>
 

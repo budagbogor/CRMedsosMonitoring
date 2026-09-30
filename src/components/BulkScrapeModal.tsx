@@ -1,0 +1,196 @@
+import React, { useState, useRef } from 'react';
+import { X, Upload, FileSpreadsheet, Download, CheckCircle2, AlertTriangle, RefreshCw, Layers } from 'lucide-react';
+import Papa from 'papaparse';
+
+interface BulkScrapeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClose }) => {
+  const [file, setFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<{ success: boolean; message: string; taskId?: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  if (!isOpen) return null;
+
+  const handleDownloadTemplate = () => {
+    const csvContent = "NamaCabang,Kota,URLGoogleMaps\nMobeng Cipondoh,Tangerang,https://www.google.com/maps/place/MOBENG+Cipondoh...\nMobeng BSD,Tangerang Selatan,https://www.google.com/maps/place/...";
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = "Template_Bulk_Scrape_Cabang.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+      setUploadResult(null);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadResult(null);
+
+    const formData = new FormData();
+    formData.append('csvFile', file);
+
+    try {
+      const response = await fetch('/api/bulk-scrape', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      setUploadResult({
+        success: data.success,
+        message: data.message || data.error,
+        taskId: data.taskId
+      });
+      if (data.success) {
+        setFile(null);
+      }
+    } catch (err: any) {
+      setUploadResult({ success: false, message: 'Gagal menghubungi server: ' + err.message });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center border border-blue-200 shadow-inner">
+              <Layers className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg">Bulk Import & Scraping</h3>
+              <p className="text-xs text-slate-500">Otomatisasi scraping banyak cabang sekaligus</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-slate-200 text-slate-500 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto space-y-6">
+          
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <h4 className="text-sm font-bold text-amber-800 flex items-center gap-2 mb-2">
+              <FileSpreadsheet className="w-4 h-4" /> 1. Download Template CSV
+            </h4>
+            <p className="text-xs text-amber-700/80 mb-3">
+              Gunakan template ini untuk mendaftarkan URL Google Maps cabang-cabang Anda. Jangan ubah nama kolom (header) pada baris pertama.
+            </p>
+            <button
+              onClick={handleDownloadTemplate}
+              className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" /> Download Template.csv
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-slate-800">2. Upload File CSV</h4>
+            
+            <div 
+              className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors ${file ? 'border-blue-400 bg-blue-50' : 'border-slate-300 hover:border-slate-400 bg-slate-50'}`}
+            >
+              <Upload className={`w-8 h-8 mb-3 ${file ? 'text-blue-500' : 'text-slate-400'}`} />
+              
+              {file ? (
+                <>
+                  <p className="text-sm font-bold text-slate-700">{file.name}</p>
+                  <p className="text-xs text-slate-500 mt-1">{(file.size / 1024).toFixed(1)} KB</p>
+                  <button 
+                    onClick={() => setFile(null)}
+                    className="mt-3 text-xs text-red-500 hover:text-red-700 font-medium"
+                  >
+                    Batal Pilih
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Tarik & lepas file CSV di sini, atau</p>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+                  >
+                    Pilih File
+                  </button>
+                  <input 
+                    type="file" 
+                    accept=".csv" 
+                    className="hidden" 
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+
+          {uploadResult && (
+            <div className={`p-4 rounded-xl flex items-start gap-3 border ${uploadResult.success ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+              {uploadResult.success ? (
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+              ) : (
+                <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+              )}
+              <div>
+                <h5 className={`text-sm font-bold ${uploadResult.success ? 'text-emerald-800' : 'text-red-800'}`}>
+                  {uploadResult.success ? 'Berhasil Masuk Antrean' : 'Upload Gagal'}
+                </h5>
+                <p className={`text-xs mt-1 ${uploadResult.success ? 'text-emerald-700' : 'text-red-700'}`}>
+                  {uploadResult.message}
+                </p>
+              </div>
+            </div>
+          )}
+
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
+          >
+            Tutup
+          </button>
+          <button
+            onClick={handleUpload}
+            disabled={!file || isUploading}
+            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg shadow-md transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {isUploading ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" /> Mengupload...
+              </>
+            ) : (
+              <>
+                <Upload className="w-4 h-4" /> Mulai Bulk Scraping
+              </>
+            )}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+};

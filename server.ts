@@ -7,12 +7,15 @@ import pg from "pg";
 import { createServer as createViteServer } from "vite";
 import { Resend } from "resend";
 import puppeteer from "puppeteer";
+import multer from "multer";
+import Papa from "papaparse";
 
 dotenv.config();
 
 const { Pool } = pg;
 
 const app = express();
+const upload = multer({ dest: 'uploads/' });
 const PORT = 3000;
 
 app.use(express.json({ limit: "10mb" }));
@@ -330,6 +333,107 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
 
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || 'Terjadi kesalahan saat scraping.' });
+  }
+});
+
+// API Bulk Scrape Google Maps Reviews (CSV Upload)
+app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ success: false, error: "File CSV wajib diunggah." });
+    return;
+  }
+
+  try {
+    const csvData = fs.readFileSync(req.file.path, 'utf8');
+    
+    Papa.parse(csvData, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        // Send success response immediately so the UI doesn't hang
+        res.json({ 
+          success: true, 
+          message: `File CSV diterima. Memulai scraping untuk ${results.data.length} cabang di background.`,
+          taskId: `scrape-${Date.now()}`
+        });
+
+        const rows = results.data as Array<{NamaCabang: string, Kota: string, URLGoogleMaps: string}>;
+        
+        let browser: any = null;
+        try {
+          browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=id-ID,id']
+          });
+
+          for (const row of rows) {
+            const branchName = row.NamaCabang?.trim();
+            const url = row.URLGoogleMaps?.trim();
+            
+            if (!branchName || !url || !url.startsWith('http')) {
+              console.log(`[Bulk Scrape] Melewati baris tidak valid: ${branchName}`);
+              continue;
+            }
+
+            console.log(`[Bulk Scrape] Memproses cabang: ${branchName}`);
+            
+            try {
+              const page = await browser.newPage();
+              await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+              await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+              
+              try {
+                await page.waitForSelector('.wiI7pd', { timeout: 10000 });
+              } catch (e) {
+                console.log(`[Bulk Scrape] ${branchName}: Timeout menunggu .wiI7pd`);
+              }
+
+              const rawReviews = await page.evaluate(() => {
+                const reviewElements = document.querySelectorAll('.wiI7pd');
+                const data: any[] = [];
+                reviewElements.forEach((el) => {
+                  if (el.textContent && el.textContent.trim().length > 0) {
+                    data.push({ text: el.textContent.trim() });
+                  }
+                });
+                return data;
+              });
+
+              // Format reviews for Database
+              const formattedReviews = rawReviews.map(r => ({
+                author: "Google User (Scraped)",
+                rating: 0, // Mock rating as we didn't scrape stars for simplicity
+                date: new Date().toISOString(),
+                text: r.text,
+                sentiment: "neutral",
+                tags: []
+              }));
+
+              if (formattedReviews.length > 0) {
+                await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString());
+                console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan.`);
+              } else {
+                console.log(`[Bulk Scrape] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
+              }
+              
+              await page.close();
+            } catch (err: any) {
+              console.error(`[Bulk Scrape Error] ${branchName}:`, err.message);
+            }
+          }
+        } catch (err) {
+          console.error("[Bulk Scrape Fatal Error]:", err);
+        } finally {
+          if (browser) await browser.close();
+        }
+      },
+      error: (error: any) => {
+        res.status(500).json({ success: false, error: 'Gagal mem-parsing CSV: ' + error.message });
+      }
+    });
+
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || 'Terjadi kesalahan sistem.' });
   }
 });
 

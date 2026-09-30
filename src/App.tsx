@@ -15,6 +15,7 @@ import { ExecutiveAIAdvisorChat } from './components/ExecutiveAIAdvisorChat';
 import { RegionalBranchGrid } from './components/RegionalBranchGrid';
 import { HistoricalAnalyticsSection } from './components/HistoricalAnalyticsSection';
 import { CSAutomationModal } from './components/CSAutomationModal';
+import { BulkScrapeModal } from './components/BulkScrapeModal';
 import { PRESET_DATASETS } from './data/mockDatasets';
 import { FullIntelligenceReport, BranchData, SearchState, AIConfig, AgentExecutionState, CSAutomationConfig } from './types';
 import { loadAIConfig, saveAIConfig } from './services/aiProvider';
@@ -69,6 +70,7 @@ export default function App() {
     };
   });
   const [isCSAutomationOpen, setIsCSAutomationOpen] = useState(false);
+  const [isBulkScrapeOpen, setIsBulkScrapeOpen] = useState(false);
 
   const handleSaveCSConfig = (newConfig: CSAutomationConfig) => {
     setCsAutomationConfig(newConfig);
@@ -579,6 +581,12 @@ export default function App() {
         onSaveConfig={handleSaveCSConfig}
       />
 
+      {/* Bulk Scrape Modal */}
+      <BulkScrapeModal
+        isOpen={isBulkScrapeOpen}
+        onClose={() => setIsBulkScrapeOpen(false)}
+      />
+
       {/* Header Bar */}
       <Header
         currentBrand={report.brandName}
@@ -588,6 +596,7 @@ export default function App() {
         aiConfig={aiConfig}
         onOpenAISettings={() => setIsAISettingsOpen(true)}
         onOpenCSAutomation={() => setIsCSAutomationOpen(true)}
+        onOpenBulkScrape={() => setIsBulkScrapeOpen(true)}
       />
 
       {/* Main Content Workspace */}
