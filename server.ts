@@ -9,9 +9,7 @@ import { Resend } from "resend";
 import puppeteer from "puppeteer";
 import multer from "multer";
 import Papa from "papaparse";
-
-dotenv.config();
-
+dotenv.config({ override: true });
 const { Pool } = pg;
 
 const app = express();
@@ -73,6 +71,40 @@ async function initDB() {
       );
     `);
     console.log("✅ Tabel branch_reviews di Cloud PostgreSQL siap digunakan.");
+
+    // Migrate from local database if PostgreSQL is empty
+    const { rows } = await pool.query(`SELECT COUNT(*) FROM branch_reviews;`);
+    if (parseInt(rows[0].count) === 0) {
+      console.log("🔄 Melakukan migrasi data dari local-database.json ke PostgreSQL...");
+      try {
+        const DB_PATH = path.join(process.cwd(), "data", "local-database.json");
+        if (fs.existsSync(DB_PATH)) {
+          const dbData = JSON.parse(fs.readFileSync(DB_PATH, "utf-8"));
+          if (dbData.branches) {
+            let migratedCount = 0;
+            for (const branchName in dbData.branches) {
+              const branch = dbData.branches[branchName];
+              // Skip junk data (e.g., empty reviews or test data)
+              if (branch.reviews && branch.reviews.length > 0) {
+                const rating = branch.meta?.rating || 0;
+                const reviewCount = branch.meta?.reviewCount || 0;
+                const fetchedAt = branch.fetchedAt || new Date().toISOString();
+                
+                await pool.query(`
+                  INSERT INTO branch_reviews (branch_name, reviews, rating, review_count, fetched_at, last_sync)
+                  VALUES ($1, $2, $3, $4, $5, NOW())
+                  ON CONFLICT (branch_name) DO NOTHING;
+                `, [branchName, JSON.stringify(branch.reviews), rating, reviewCount, fetchedAt]);
+                migratedCount++;
+              }
+            }
+            console.log(`✅ Berhasil migrasi ${migratedCount} cabang valid ke Cloud PostgreSQL.`);
+          }
+        }
+      } catch (e: any) {
+        console.error("⚠️ Gagal migrasi data lokal:", e?.message);
+      }
+    }
   } catch (err: any) {
     console.error("⚠️ Gagal inisialisasi tabel PostgreSQL:", err?.message || String(err));
   }
