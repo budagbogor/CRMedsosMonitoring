@@ -5,9 +5,10 @@ import Papa from 'papaparse';
 interface BulkScrapeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  branches?: any[];
 }
 
-export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClose }) => {
+export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClose, branches = [] }) => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<{ success: boolean; message: string; taskId?: string } | null>(null);
@@ -64,6 +65,32 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
     }
   };
 
+  const handleScrapeAll = async () => {
+    if (!branches || branches.length === 0) return;
+    
+    setIsUploading(true);
+    setUploadResult(null);
+
+    try {
+      const response = await fetch('/api/bulk-scrape-json', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ branches }),
+      });
+
+      const data = await response.json();
+      setUploadResult({
+        success: data.success,
+        message: data.message || data.error,
+        taskId: data.taskId
+      });
+    } catch (err: any) {
+      setUploadResult({ success: false, message: 'Gagal menghubungi server: ' + err.message });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
@@ -90,12 +117,35 @@ export const BulkScrapeModal: React.FC<BulkScrapeModalProps> = ({ isOpen, onClos
         {/* Content */}
         <div className="p-6 overflow-y-auto space-y-6">
           
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 shadow-sm">
+            <h4 className="text-sm font-bold text-blue-900 flex items-center gap-2 mb-2">
+              <RefreshCw className="w-4 h-4" /> Otomatis (Tanpa Upload)
+            </h4>
+            <p className="text-xs text-blue-800/80 mb-4">
+              Scrape seluruh data cabang yang sudah ada di dalam tabel halaman utama secara otomatis. Sistem akan mencari data rating dan ulasan berdasarkan nama dan kota cabang.
+            </p>
+            <button
+              onClick={handleScrapeAll}
+              disabled={isUploading}
+              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
+            >
+              {isUploading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Layers className="w-4 h-4" />}
+              {isUploading ? 'Sedang Memproses...' : `Scrape Semua ${branches ? branches.length : 0} Cabang Sekarang`}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px bg-slate-200 flex-1"></div>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">ATAU VIA CSV</span>
+            <div className="h-px bg-slate-200 flex-1"></div>
+          </div>
+
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
             <h4 className="text-sm font-bold text-amber-800 flex items-center gap-2 mb-2">
               <FileSpreadsheet className="w-4 h-4" /> 1. Download Template CSV
             </h4>
             <p className="text-xs text-amber-700/80 mb-3">
-              Gunakan template ini untuk mendaftarkan URL Google Maps cabang-cabang Anda. Jangan ubah nama kolom (header) pada baris pertama.
+              Gunakan template ini untuk mendaftarkan URL Google Maps cabang baru.
             </p>
             <button
               onClick={handleDownloadTemplate}

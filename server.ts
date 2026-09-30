@@ -450,6 +450,119 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
     res.status(500).json({ success: false, error: err.message || 'Terjadi kesalahan saat scraping.' });
   }
 });
+// API Bulk Scrape Google Maps Reviews (From Existing Table JSON)
+app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (req, res) => {
+  const { branches } = req.body;
+  if (!branches || !Array.isArray(branches)) {
+    res.status(400).json({ success: false, error: "Data branches tidak valid." });
+    return;
+  }
+
+  // Send success response immediately so the UI doesn't hang
+  res.json({ 
+    success: true, 
+    message: `Memulai scraping untuk ${branches.length} cabang di background.`,
+    taskId: `scrape-${Date.now()}`
+  });
+
+  let browser: any = null;
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=id-ID,id']
+    });
+
+    for (const branch of branches) {
+      const branchName = branch.name?.trim();
+      let url = branch.mapsUrl?.trim();
+      
+      if (!url || !url.startsWith('http')) {
+        // Fallback to searching Google Maps if no direct URL is provided
+        url = `https://www.google.com/maps/search/${encodeURIComponent(branchName + ' ' + (branch.city || ''))}`;
+      }
+
+      if (!branchName) {
+        console.log(`[Bulk Scrape JSON] Melewati baris tidak valid: nama kosong`);
+        continue;
+      }
+
+      console.log(`[Bulk Scrape JSON] Memproses cabang: ${branchName}`);
+      
+      try {
+        const page = await browser.newPage();
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+        
+        try {
+          await page.waitForSelector('.wiI7pd', { timeout: 10000 });
+        } catch (e) {
+          console.log(`[Bulk Scrape JSON] ${branchName}: Timeout menunggu .wiI7pd`);
+        }
+
+        const extractedData = await page.evaluate(() => {
+          const reviewElements = document.querySelectorAll('.wiI7pd');
+          const reviews: any[] = [];
+          reviewElements.forEach((el) => {
+            if (el.textContent && el.textContent.trim().length > 0) {
+              reviews.push({ text: el.textContent.trim() });
+            }
+          });
+
+          let overallRating = 0;
+          let totalReviewCount = 0;
+          try {
+            const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+            if (ratingEl) {
+              const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+              if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+            }
+            
+            const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+            if (countEl) {
+              const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+              if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
+            }
+
+            if (!overallRating || !totalReviewCount) {
+              const mainText = document.body.innerText;
+              const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+              if (match) {
+                if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
+                if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+              }
+            }
+          } catch (e) {}
+
+          return { reviews, overallRating, totalReviewCount };
+        });
+
+        const formattedReviews = extractedData.reviews.map((r: any) => ({
+          author: "Google User (Scraped)",
+          rating: 0,
+          date: new Date().toISOString(),
+          text: r.text,
+          sentiment: "neutral",
+          tags: []
+        }));
+
+        if (formattedReviews.length > 0 || extractedData.totalReviewCount > 0) {
+          await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
+          console.log(`[Bulk Scrape JSON] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan (dan meta-data).`);
+        } else {
+          console.log(`[Bulk Scrape JSON] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
+        }
+        
+        await page.close();
+      } catch (err: any) {
+        console.error(`[Bulk Scrape JSON Error] ${branchName}:`, err.message);
+      }
+    }
+  } catch (err) {
+    console.error("[Bulk Scrape JSON Fatal Error]:", err);
+  } finally {
+    if (browser) await browser.close();
+  }
+});
 
 // API Bulk Scrape Google Maps Reviews (CSV Upload)
 app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (req, res) => {
