@@ -101,7 +101,7 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({
                 onClick={() => handleProviderChange('gemini')}
                 className={`p-3.5 rounded-xl border text-left flex items-start gap-3 transition-all ${
                   formData.provider === 'gemini'
-                    ? 'bg-blue-100/60 border-blue-500 ring-2 ring-blue-500/30 text-white'
+                    ? 'bg-blue-100/60 border-blue-500 ring-2 ring-blue-500/30 text-blue-900'
                     : 'bg-slate-50/50 border-slate-300/70 text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -120,7 +120,7 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({
                 onClick={() => handleProviderChange('sumopod')}
                 className={`p-3.5 rounded-xl border text-left flex items-start gap-3 transition-all ${
                   formData.provider === 'sumopod'
-                    ? 'bg-indigo-100/60 border-indigo-500 ring-2 ring-indigo-500/30 text-white'
+                    ? 'bg-indigo-100/60 border-indigo-500 ring-2 ring-indigo-500/30 text-indigo-900'
                     : 'bg-slate-50/50 border-slate-300/70 text-slate-700 hover:bg-slate-50'
                 }`}
               >

@@ -567,7 +567,7 @@ export const CSAutomationModal: React.FC<CSAutomationModalProps> = ({
                   onClick={() => setFormData({ ...formData, directReplyMode: 'approval' })}
                   className={`p-3 rounded-xl border text-left transition-all ${
                     (formData.directReplyMode || 'approval') === 'approval'
-                      ? 'bg-blue-100/60 border-blue-500 text-white ring-1 ring-blue-500/40'
+                      ? 'bg-blue-100/60 border-blue-500 text-blue-900 ring-1 ring-blue-500/40'
                       : 'bg-white border-slate-300/80 text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -584,7 +584,7 @@ export const CSAutomationModal: React.FC<CSAutomationModalProps> = ({
                   onClick={() => setFormData({ ...formData, directReplyMode: 'auto_direct' })}
                   className={`p-3 rounded-xl border text-left transition-all ${
                     formData.directReplyMode === 'auto_direct'
-                      ? 'bg-emerald-100/60 border-emerald-500 text-white ring-1 ring-emerald-500/40'
+                      ? 'bg-emerald-100/60 border-emerald-500 text-emerald-900 ring-1 ring-emerald-500/40'
                       : 'bg-white border-slate-300/80 text-slate-500 hover:text-slate-800'
                   }`}
                 >
