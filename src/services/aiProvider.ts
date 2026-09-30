@@ -7,6 +7,7 @@ export const DEFAULT_AI_CONFIG: AIConfig = {
   baseUrl: 'https://ai.sumopod.com/v1',
   useOrchestration: true,
   autoSyncPerformanceInterval: 'off',
+  apiKeyScope: 'global',
 };
 
 export const PROVIDER_MODELS: Record<AIProvider, Array<{ id: string; name: string; description: string }>> = {

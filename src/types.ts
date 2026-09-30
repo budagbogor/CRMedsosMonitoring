@@ -124,6 +124,7 @@ export interface AIConfig {
   baseUrl: string;
   useOrchestration: boolean;
   autoSyncPerformanceInterval?: AutoSyncPerformanceInterval;
+  apiKeyScope?: 'global' | 'local';
 }
 
 export type AgentStatus = 'idle' | 'working' | 'completed' | 'error';

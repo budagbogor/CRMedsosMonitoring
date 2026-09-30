@@ -160,9 +160,17 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({
               <span className="flex items-center gap-1.5">
                 <Key className="w-3.5 h-3.5 text-amber-600" /> API Key ({formData.provider.toUpperCase()})
               </span>
-              <span className="text-[10px] text-slate-500 font-normal">
-                Disimpan lokal di browser
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-slate-500 font-normal">Penyimpanan:</span>
+                <select
+                  value={formData.apiKeyScope || 'global'}
+                  onChange={(e) => setFormData({ ...formData, apiKeyScope: e.target.value as 'global' | 'local' })}
+                  className="text-[10px] bg-slate-50 border border-slate-300 rounded px-1.5 py-0.5 text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="global">Global (Default)</option>
+                  <option value="local">Lokal (Browser)</option>
+                </select>
+              </div>
             </label>
             <div className="relative">
               <input
