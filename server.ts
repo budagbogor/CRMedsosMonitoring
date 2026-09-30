@@ -57,6 +57,30 @@ function getPgPool(): pg.Pool | null {
   return _pgPool;
 }
 
+// Initialize Database Tables
+async function initDB() {
+  const pool = getPgPool();
+  if (!pool) return;
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS branch_reviews (
+        branch_name VARCHAR(255) PRIMARY KEY,
+        reviews JSONB,
+        rating NUMERIC(3, 1),
+        review_count INTEGER,
+        fetched_at TIMESTAMP,
+        last_sync TIMESTAMP
+      );
+    `);
+    console.log("✅ Tabel branch_reviews di Cloud PostgreSQL siap digunakan.");
+  } catch (err: any) {
+    console.error("⚠️ Gagal inisialisasi tabel PostgreSQL:", err?.message || String(err));
+  }
+}
+
+// Run initDB
+initDB();
+
 // Local Disk Database Helper (Drive G:)
 const DB_PATH = path.join(process.cwd(), "data", "local-database.json");
 
@@ -97,18 +121,18 @@ function saveBranchReviewsToLocalDB(branchName: string, reviews: any[], fetchedA
 }
 
 // Helper Dual-Storage (PostgreSQL Sumobase + Local Drive G:)
-async function saveBranchReviewsToDB(branchName: string, reviews: any[], fetchedAt: string) {
+async function saveBranchReviewsToDB(branchName: string, reviews: any[], fetchedAt: string, rating: number = 0, reviewCount: number = 0) {
   saveBranchReviewsToLocalDB(branchName, reviews, fetchedAt);
 
   const pool = getPgPool();
   if (!pool) return; // No DB configured
   try {
     await pool.query(`
-      INSERT INTO branch_reviews (branch_name, reviews, fetched_at, last_sync)
-      VALUES ($1, $2, $3, NOW())
+      INSERT INTO branch_reviews (branch_name, reviews, rating, review_count, fetched_at, last_sync)
+      VALUES ($1, $2, $3, $4, $5, NOW())
       ON CONFLICT (branch_name)
-      DO UPDATE SET reviews = $2, fetched_at = $3, last_sync = NOW();
-    `, [branchName, JSON.stringify(reviews), fetchedAt]);
+      DO UPDATE SET reviews = $2, rating = $3, review_count = $4, fetched_at = $5, last_sync = NOW();
+    `, [branchName, JSON.stringify(reviews), rating, reviewCount, fetchedAt]);
     console.log(`  💾 Ulasan ${branchName} tersimpan di Cloud PostgreSQL Sumobase`);
   } catch (err: any) {
     console.error("Gagal menyimpan ke Cloud PostgreSQL Sumobase:", err?.message || String(err));
@@ -358,7 +382,7 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
         sentiment: "neutral",
         tags: []
       }));
-      await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString());
+      await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), overallRating, totalReviewCount);
       savedCount = formattedReviews.length;
     }
 
@@ -428,21 +452,32 @@ app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (
                 console.log(`[Bulk Scrape] ${branchName}: Timeout menunggu .wiI7pd`);
               }
 
-              const rawReviews = await page.evaluate(() => {
+              const extractedData = await page.evaluate(() => {
                 const reviewElements = document.querySelectorAll('.wiI7pd');
-                const data: any[] = [];
+                const reviews: any[] = [];
                 reviewElements.forEach((el) => {
                   if (el.textContent && el.textContent.trim().length > 0) {
-                    data.push({ text: el.textContent.trim() });
+                    reviews.push({ text: el.textContent.trim() });
                   }
                 });
-                return data;
+
+                let overallRating = 0;
+                let totalReviewCount = 0;
+                try {
+                  const match = document.body.innerText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+                  if (match) {
+                    overallRating = parseFloat(match[1].replace(',', '.'));
+                    totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+                  }
+                } catch (e) {}
+
+                return { reviews, overallRating, totalReviewCount };
               });
 
               // Format reviews for Database
-              const formattedReviews = rawReviews.map(r => ({
+              const formattedReviews = extractedData.reviews.map(r => ({
                 author: "Google User (Scraped)",
-                rating: 0, // Mock rating as we didn't scrape stars for simplicity
+                rating: 0,
                 date: new Date().toISOString(),
                 text: r.text,
                 sentiment: "neutral",
@@ -450,7 +485,7 @@ app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (
               }));
 
               if (formattedReviews.length > 0) {
-                await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString());
+                await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
                 console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan.`);
               } else {
                 console.log(`[Bulk Scrape] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
