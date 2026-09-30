@@ -4,6 +4,7 @@ import fs from "fs";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import pg from "pg";
+import { createServer as createViteServer } from "vite";
 
 dotenv.config();
 
@@ -1318,18 +1319,41 @@ PENTING: Jangan buat ulasan fiktif. Hanya salin ulasan yang benar-benar ada di G
   }
 });
 
-// Catch-all 404 handler for API routes
-app.use("/api/*", (_req, res) => {
-  res.status(404).json({ error: "Endpoint API tidak ditemukan." });
-});
+async function setupApp() {
+  if (process.env.NODE_ENV !== "production" && process.env.VERCEL !== "1") {
+    try {
+      const vite = await createViteServer({
+        server: { middlewareMode: true, allowedHosts: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+      console.log("  ⚡ Vite Dev Middleware terpasang!");
+    } catch (viteErr) {
+      console.error("Vite setup error:", viteErr);
+    }
+  } else {
+    const distPath = path.join(process.cwd(), "dist");
+    app.use(express.static(distPath));
+    app.get("*", (_req, res) => {
+      res.sendFile(path.join(distPath, "index.html"));
+    });
+  }
 
-// Global Error Handler to prevent Vercel Serverless Function 500 crash
-app.use((err: any, _req: any, res: any, _next: any) => {
-  console.error("Unhandled Express Error:", err);
-  res.status(500).json({ error: err?.message || "Internal Server Error" });
-});
+  // Catch-all 404 handler for API routes
+  app.use("/api/*", (_req, res) => {
+    res.status(404).json({ error: "Endpoint API tidak ditemukan." });
+  });
+
+  // Global Error Handler to prevent Vercel Serverless Function 500 crash
+  app.use((err: any, _req: any, res: any, _next: any) => {
+    console.error("Unhandled Express Error:", err);
+    res.status(500).json({ error: err?.message || "Internal Server Error" });
+  });
+}
 
 async function startServer() {
+  await setupApp();
+  
   const initialPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
   function listenOnPort(port: number) {
@@ -1347,33 +1371,15 @@ async function startServer() {
     });
   }
 
-  if (process.env.VERCEL !== "1") {
-    listenOnPort(initialPort);
-  }
-
-  if (process.env.NODE_ENV !== "production" && process.env.VERCEL !== "1") {
-    try {
-      const { createServer: createViteServer } = await import("vite");
-      const vite = await createViteServer({
-        server: { middlewareMode: true, allowedHosts: true },
-        appType: "spa",
-      });
-      app.use(vite.middlewares);
-      console.log("  ⚡ Vite Dev Middleware terpasang!");
-    } catch (viteErr) {
-      console.error("Vite setup error:", viteErr);
-    }
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
+  listenOnPort(initialPort);
 }
 
 if (process.env.VERCEL !== "1") {
   startServer();
+} else {
+  // For Vercel Serverless, initialize synchronously as much as possible
+  // Note: Vercel might not wait for setupApp() if not awaited, but Vercel handles static routing separately
+  setupApp();
 }
 
 export default app;

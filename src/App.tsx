@@ -642,7 +642,7 @@ ${report.executiveSummary}
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-blue-600 selection:text-white pb-16">
+    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white pb-16">
       
       {/* Search Streaming Modal */}
       <SearchProgressModal searchState={searchState} targetQuery={activeQuery} />
@@ -732,9 +732,9 @@ ${report.executiveSummary}
 
         {/* Grounding Sources Disclaimer Footer */}
         {report.groundingSources && report.groundingSources.length > 0 && (
-          <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 text-xs text-slate-400 my-6">
-            <p className="font-bold text-slate-200 mb-2 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Sumber Grounding Real-Time Google Search:
+          <div className="bg-white rounded-xl border border-slate-200 p-4 text-xs text-slate-500 my-6">
+            <p className="font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Sumber Grounding Real-Time Google Search:
             </p>
             <div className="flex flex-wrap gap-2">
               {report.groundingSources.map((source, i) => (
@@ -743,10 +743,10 @@ ${report.executiveSummary}
                   href={source.uri}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] transition-colors"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-50 hover:bg-slate-100 text-slate-700 text-[11px] transition-colors"
                 >
                   <span className="truncate max-w-xs">{source.title}</span>
-                  <ExternalLink className="w-3 h-3 text-slate-400 shrink-0" />
+                  <ExternalLink className="w-3 h-3 text-slate-500 shrink-0" />
                 </a>
               ))}
             </div>
@@ -778,28 +778,28 @@ ${report.executiveSummary}
       />
 
       {/* Executive Footer Banner */}
-      <footer className="mt-12 bg-slate-900 text-slate-300 py-8 border-t border-slate-800 no-print">
+      <footer className="mt-12 bg-white text-slate-700 py-8 border-t border-slate-200 no-print">
         <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
           <div className="min-w-[200px]">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">Rekomendasi Strategis<br />Operasional Management</h3>
-            <p className="text-[11px] text-blue-400 mt-1">Astra Otoservice & Network Analytics</p>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Rekomendasi Strategis<br />Operasional Management</h3>
+            <p className="text-[11px] text-blue-600 mt-1">Astra Otoservice & Network Analytics</p>
           </div>
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-700">
             <div className="border-l-2 border-blue-500 pl-3">
-              <p className="text-[10px] font-bold text-blue-400 mb-0.5 uppercase tracking-wider">OPS LEVEL 1</p>
+              <p className="text-[10px] font-bold text-blue-600 mb-0.5 uppercase tracking-wider">OPS LEVEL 1</p>
               <p className="text-[11px] leading-snug">Audit mendalam integritas & waktu antrean pada cabang sektor Red Flag.</p>
             </div>
             <div className="border-l-2 border-blue-500 pl-3">
-              <p className="text-[10px] font-bold text-blue-400 mb-0.5 uppercase tracking-wider">OPS LEVEL 2</p>
+              <p className="text-[10px] font-bold text-blue-600 mb-0.5 uppercase tracking-wider">OPS LEVEL 2</p>
               <p className="text-[11px] leading-snug">Implementasi sistem approval digital wajib sebelum penambahan pengerjaan.</p>
             </div>
             <div className="border-l-2 border-blue-400 pl-3">
-              <p className="text-[10px] font-bold text-blue-400 mb-0.5 uppercase tracking-wider">OPS LEVEL 3</p>
+              <p className="text-[10px] font-bold text-blue-600 mb-0.5 uppercase tracking-wider">OPS LEVEL 3</p>
               <p className="text-[11px] leading-snug">Standardisasi response time CRM maksimal 10 menit untuk menekan sentimen negatif.</p>
             </div>
           </div>
         </div>
-        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 mt-6 pt-4 border-t border-slate-800 text-center text-[11px] text-slate-400">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 mt-6 pt-4 border-t border-slate-200 text-center text-[11px] text-slate-500">
           <p>© 2026 AutoReputation AI — Powered by Google AI Studio, Gemini API & Sumopod AI Engine.</p>
         </div>
       </footer>

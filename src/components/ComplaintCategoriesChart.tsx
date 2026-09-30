@@ -11,18 +11,18 @@ const COLORS = ['#ef4444', '#f97316', '#eab308', '#6366f1', '#8b5cf6', '#ec4899'
 
 export const ComplaintCategoriesChart: React.FC<ComplaintCategoriesChartProps> = ({ categories }) => {
   return (
-    <section className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl p-6 mb-8">
+    <section className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 mb-8">
       
       {/* Title */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
               4. Categorization & Deep-Dive Analisis Keluhan
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Pengelompokan pola komplain konsumen dari seluruh cabang berdasarkan frekuensi, persentase, dan tingkat keparahan (severity).
           </p>
         </div>
@@ -31,8 +31,8 @@ export const ComplaintCategoriesChart: React.FC<ComplaintCategoriesChartProps> =
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         
         {/* Visual Chart Column (5 cols) */}
-        <div className="lg:col-span-5 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
-          <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 text-center">
+        <div className="lg:col-span-5 bg-slate-100/60 p-4 rounded-xl border border-slate-200">
+          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 text-center">
             Distribusi Kategori Komplain Utama (%)
           </h4>
 
@@ -120,7 +120,7 @@ export const ComplaintCategoriesChart: React.FC<ComplaintCategoriesChartProps> =
               {/* Sample Customer Quote */}
               {cat.sampleQuotes && cat.sampleQuotes.length > 0 && (
                 <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 text-xs text-slate-600 flex items-start gap-2">
-                  <Quote className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                  <Quote className="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5" />
                   <p className="italic text-slate-700">
                     "{cat.sampleQuotes[0]}"
                   </p>

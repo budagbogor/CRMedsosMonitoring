@@ -237,42 +237,42 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
   const endHourStr = lastHourLabel.replace(":", ".");
 
   return (
-    <section className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl p-6 mb-8">
+    <section className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 mb-8">
       
       {/* Section Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
               5. Pattern Kedatangan & Tren Keramaian (Footfall Analysis)
             </h3>
             {currentPattern.isSpecificBranch ? (
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-extrabold border border-emerald-500/40 flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-emerald-400" /> Cabang: {currentPattern.branchName}
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 text-[11px] font-extrabold border border-emerald-500/40 flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-600" /> Cabang: {currentPattern.branchName}
               </span>
             ) : (
-              <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[11px] font-extrabold border border-blue-500/40 flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-700 text-[11px] font-extrabold border border-blue-500/40 flex items-center gap-1">
                 🌐 Seluruh Cabang ({branches.length || 31} Outlet)
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Analisis pola waktu tersibuk (peak hours), hari paling ramai, dan indikasi penumpukan beban kerja operasional.
           </p>
         </div>
 
         {/* Store Selection Dropdown Filter */}
         {branches.length > 0 && (
-          <div className="flex items-center gap-2.5 bg-slate-950 p-2 rounded-xl border border-slate-800 shrink-0">
-            <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs pl-1">
+          <div className="flex items-center gap-2.5 bg-slate-100 p-2 rounded-xl border border-slate-200 shrink-0">
+            <div className="flex items-center gap-1.5 text-amber-600 font-bold text-xs pl-1">
               <Building className="w-4 h-4" />
               <span>Pilih Toko / Cabang:</span>
             </div>
             <select
               value={selectedBranchId}
               onChange={(e) => setSelectedBranchId(e.target.value)}
-              className="bg-slate-900 border border-slate-700 text-white font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer max-w-[280px] truncate"
+              className="bg-white border border-slate-300 text-slate-900 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer max-w-[280px] truncate"
             >
               <option value="ALL">🌐 Seluruh Cabang (Konsolidasi Jaringan — {branches.length} Toko)</option>
               {branches.map((b) => (
@@ -291,9 +291,9 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
         <div className="lg:col-span-5 space-y-4">
           
           {/* Busy Days Card */}
-          <div className="p-4 rounded-xl bg-indigo-950/40 border border-indigo-500/30">
-            <div className="flex items-center gap-2 text-indigo-300 mb-2">
-              <Calendar className="w-4 h-4 text-indigo-400 shrink-0" />
+          <div className="p-4 rounded-xl bg-indigo-100/40 border border-indigo-500/30">
+            <div className="flex items-center gap-2 text-indigo-700 mb-2">
+              <Calendar className="w-4 h-4 text-indigo-600 shrink-0" />
               <h4 className="font-bold text-xs uppercase tracking-wider">
                 Hari Paling Ramai (Peak Days)
               </h4>
@@ -308,40 +308,40 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
           </div>
 
           {/* Peak Hours Card */}
-          <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/30">
-            <div className="flex items-center gap-2 text-amber-300 mb-2">
-              <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+          <div className="p-4 rounded-xl bg-amber-100/40 border border-amber-500/30">
+            <div className="flex items-center gap-2 text-amber-700 mb-2">
+              <Clock className="w-4 h-4 text-amber-600 shrink-0" />
               <h4 className="font-bold text-xs uppercase tracking-wider">
                 Jam Tersibuk (Peak Hours)
               </h4>
             </div>
-            <p className="text-base font-extrabold text-amber-200">
+            <p className="text-base font-extrabold text-amber-800">
               {currentPattern.peakHours}
             </p>
-            <p className="text-xs text-amber-400/90 mt-1">
-              Waktu Paling Longgar: <span className="font-semibold text-amber-200">{currentPattern.quietHours}</span>
+            <p className="text-xs text-amber-600/90 mt-1">
+              Waktu Paling Longgar: <span className="font-semibold text-amber-800">{currentPattern.quietHours}</span>
             </p>
           </div>
 
           {/* Traffic Narrative Summary */}
-          <div className="p-4 rounded-xl bg-slate-950 text-slate-200 border border-slate-800 text-xs leading-relaxed">
-            <p className="font-bold text-amber-400 mb-1 flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-400" /> Temuan Pola Kunjungan:
+          <div className="p-4 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 text-xs leading-relaxed">
+            <p className="font-bold text-amber-600 mb-1 flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-amber-600" /> Temuan Pola Kunjungan:
             </p>
-            <p className="text-slate-300">
+            <p className="text-slate-700">
               {currentPattern.summary}
             </p>
           </div>
 
           {/* Quick Recommendations */}
           {currentPattern.recommendations && currentPattern.recommendations.length > 0 && (
-            <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs space-y-2">
-              <h5 className="font-bold text-slate-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Mitigasi Penumpukan Jam Sibuk:
+            <div className="p-4 rounded-xl bg-slate-100/80 border border-slate-200 text-xs space-y-2">
+              <h5 className="font-bold text-slate-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" /> Mitigasi Penumpukan Jam Sibuk:
               </h5>
               {currentPattern.recommendations.map((rec, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-slate-300">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <div key={idx} className="flex items-start gap-2 text-slate-700">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                   <span>{rec}</span>
                 </div>
               ))}
@@ -351,13 +351,13 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
         </div>
 
         {/* Right Side: Hourly Traffic Bar Chart (7 cols) */}
-        <div className="lg:col-span-7 bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-slate-100 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-              <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Grafik Keramaian Unit per Jam ({startHourStr} - {endHourStr} WIB)
               </h4>
-              <div className="flex items-center gap-3 text-[11px] text-slate-300">
+              <div className="flex items-center gap-3 text-[11px] text-slate-700">
                 <span className="flex items-center gap-1">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Normal
                 </span>
@@ -396,12 +396,12 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
             </div>
           </div>
 
-          <div className="mt-3 pt-2.5 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-            <span className="flex items-center gap-1.5 font-medium text-slate-300">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <div className="mt-3 pt-2.5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-500">
+            <span className="flex items-center gap-1.5 font-medium text-slate-700">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <strong>Metodologi Sumber Data:</strong> Aggregated Sinyal GPS Google Maps Popular Times berbasis Place ID Koordinat Fisik Cabang
             </span>
-            <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950/60 px-2.5 py-0.5 rounded border border-emerald-500/40">
+            <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100/60 px-2.5 py-0.5 rounded border border-emerald-500/40">
               Akurasi Pola Kedatangan: ±85-95%
             </span>
           </div>

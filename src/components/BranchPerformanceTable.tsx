@@ -123,24 +123,24 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
   };
 
   return (
-    <section className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl p-6 mb-8" id="tabel-komparasi">
+    <section className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 mb-8" id="tabel-komparasi">
       
       {/* Section Title Header & AI Trigger Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
               1. Tabel Komparasi Performa Cabang
             </h3>
             {lastAISyncTimestamp && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-0.5 rounded-full">
-                <Clock className="w-3 h-3 text-emerald-400" />
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-100/60 border border-emerald-800/80 px-2.5 py-0.5 rounded-full">
+                <Clock className="w-3 h-3 text-emerald-600" />
                 Ditarik AI: {lastAISyncTimestamp}
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Seluruh cabang terdeteksi diurutkan dari rating Google Review tertinggi hingga terendah untuk identifikasi pemetaan jaringan.
           </p>
         </div>
@@ -154,13 +154,13 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
               title="Tarik & perbarui rating, jumlah ulasan, serta komplain setiap cabang langsung menggunakan Google Search Grounding AI"
               className={`px-4 py-2 rounded-xl text-xs font-bold shadow-lg inline-flex items-center gap-2 transition-all ${
                 isSyncingPerformance
-                  ? 'bg-slate-800 text-amber-400 border border-amber-500/50 cursor-wait'
+                  ? 'bg-slate-50 text-amber-600 border border-amber-500/50 cursor-wait'
                   : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-amber-500/20 active:scale-95'
               }`}
             >
               {isSyncingPerformance ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-amber-400" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-amber-600" />
                   <span>AI Sedang Menarik Performance...</span>
                 </>
               ) : (
@@ -175,7 +175,7 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
           {autoSyncInterval !== 'off' && (
             <button
               onClick={onOpenAISettings}
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-amber-500/30 rounded-xl text-[11px] font-semibold text-amber-300 flex items-center gap-1.5"
+              className="px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-amber-500/30 rounded-xl text-[11px] font-semibold text-amber-700 flex items-center gap-1.5"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               Auto-Sync AI: {autoSyncInterval}
@@ -188,22 +188,22 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           {/* Table Search Input */}
           <div className="relative min-w-[200px]">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
               placeholder="Cari cabang / kota..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
 
           {/* Status Filter Buttons */}
-          <div className="inline-flex rounded-lg bg-slate-800 p-1 text-xs font-medium border border-slate-700">
+          <div className="inline-flex rounded-lg bg-slate-50 p-1 text-xs font-medium border border-slate-300">
             <button
               onClick={() => setStatusFilter('ALL')}
               className={`px-2.5 py-1 rounded-md transition-colors ${
-                statusFilter === 'ALL' ? 'bg-slate-700 text-white font-bold' : 'text-slate-400 hover:text-white'
+                statusFilter === 'ALL' ? 'bg-slate-100 text-slate-900 font-bold' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Semua ({branches.length})
@@ -211,7 +211,7 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
             <button
               onClick={() => setStatusFilter('Top')}
               className={`px-2.5 py-1 rounded-md transition-colors ${
-                statusFilter === 'Top' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                statusFilter === 'Top' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-500 hover:text-white'
               }`}
             >
               Top (⭐ 4.7+)
@@ -219,7 +219,7 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
             <button
               onClick={() => setStatusFilter('Medium')}
               className={`px-2.5 py-1 rounded-md transition-colors ${
-                statusFilter === 'Medium' ? 'bg-amber-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                statusFilter === 'Medium' ? 'bg-amber-600 text-white font-bold' : 'text-slate-500 hover:text-white'
               }`}
             >
               Medium
@@ -227,7 +227,7 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
             <button
               onClick={() => setStatusFilter('Attention Required')}
               className={`px-2.5 py-1 rounded-md transition-colors ${
-                statusFilter === 'Attention Required' ? 'bg-rose-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                statusFilter === 'Attention Required' ? 'bg-rose-600 text-white font-bold' : 'text-slate-500 hover:text-white'
               }`}
             >
               Red Flag ({redFlagIds.length})
@@ -248,9 +248,9 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
         </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800">
-        <table className="w-full text-left text-sm text-slate-300">
-          <thead className="bg-slate-950/80 text-xs uppercase text-slate-400 font-bold tracking-wider border-b border-slate-800">
+      <div className="overflow-x-auto rounded-xl border border-slate-200">
+        <table className="w-full text-left text-sm text-slate-700">
+          <thead className="bg-slate-100/80 text-xs uppercase text-slate-500 font-bold tracking-wider border-b border-slate-200">
             <tr>
               <th scope="col" className="py-3.5 px-3 w-10 text-center">
                 Pilih
@@ -260,32 +260,32 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
               </th>
               <th
                 scope="col"
-                className="py-3.5 px-4 cursor-pointer hover:bg-slate-800 transition-colors whitespace-nowrap"
+                className="py-3.5 px-4 cursor-pointer hover:bg-slate-50 transition-colors whitespace-nowrap"
                 onClick={() => handleSort('rating')}
               >
                 <div className="flex items-center gap-1.5">
                   <span>Rating Google</span>
-                  <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+                  <ArrowUpDown className="w-3.5 h-3.5 text-slate-500" />
                 </div>
               </th>
               <th
                 scope="col"
-                className="py-3.5 px-4 cursor-pointer hover:bg-slate-800 transition-colors whitespace-nowrap"
+                className="py-3.5 px-4 cursor-pointer hover:bg-slate-50 transition-colors whitespace-nowrap"
                 onClick={() => handleSort('reviewCount')}
               >
                 <div className="flex items-center gap-1.5">
                   <span>Jumlah Ulasan</span>
-                  <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+                  <ArrowUpDown className="w-3.5 h-3.5 text-slate-500" />
                 </div>
               </th>
               <th
                 scope="col"
-                className="py-3.5 px-4 cursor-pointer hover:bg-slate-800 transition-colors whitespace-nowrap"
+                className="py-3.5 px-4 cursor-pointer hover:bg-slate-50 transition-colors whitespace-nowrap"
                 onClick={() => handleSort('complaintCount')}
               >
                 <div className="flex items-center gap-1.5">
                   <span>Isu / Komplain</span>
-                  <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+                  <ArrowUpDown className="w-3.5 h-3.5 text-slate-500" />
                 </div>
               </th>
               <th scope="col" className="py-3.5 px-4 whitespace-nowrap">
@@ -296,7 +296,7 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800 bg-slate-900/60">
+          <tbody className="divide-y divide-slate-200 bg-white/60">
             {sortedAndFilteredBranches.length === 0 ? (
               <tr>
                 <td colSpan={7} className="py-8 text-center text-slate-500 text-xs">
@@ -311,9 +311,9 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
                 return (
                   <tr
                     key={branch.id}
-                    className={`hover:bg-slate-800/80 transition-colors ${
-                      isRedFlag ? 'bg-rose-950/30' : ''
-                    } ${isSelectedForCompare ? 'bg-amber-950/40 font-semibold' : ''}`}
+                    className={`hover:bg-slate-50/80 transition-colors ${
+                      isRedFlag ? 'bg-rose-100/30' : ''
+                    } ${isSelectedForCompare ? 'bg-amber-100/40 font-semibold' : ''}`}
                   >
                     {/* Column 0: Compare Checkbox */}
                     <td className="py-3.5 px-3 text-center">
@@ -332,7 +332,7 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
                           #{index + 1}
                         </span>
                         <div>
-                          <div className="font-bold text-white flex items-center gap-2">
+                          <div className="font-bold text-slate-900 flex items-center gap-2">
                             <span>{branch.name}</span>
                             {isRedFlag && (
                               <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-rose-600 text-white uppercase tracking-wider">
@@ -340,7 +340,7 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-slate-400 mt-0.5">
+                          <div className="text-xs text-slate-500 mt-0.5">
                             📍 {branch.city} {branch.address ? `• ${branch.address}` : ''}
                           </div>
                         </div>
@@ -351,22 +351,22 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
                     <td className="py-3.5 px-4 whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
                         <span className={`text-base font-extrabold ${
-                          branch.rating >= 4.7 ? 'text-emerald-400' : branch.rating >= 4.5 ? 'text-amber-400' : 'text-rose-400'
+                          branch.rating >= 4.7 ? 'text-emerald-600' : branch.rating >= 4.5 ? 'text-amber-600' : 'text-rose-600'
                         }`}>
                           {branch.rating.toFixed(1)}
                         </span>
-                        <div className="flex text-amber-400">
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        <div className="flex text-amber-600">
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-600" />
                         </div>
                       </div>
                     </td>
 
                     {/* Column 3: Review Count */}
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span className="font-semibold text-slate-200">
+                      <span className="font-semibold text-slate-800">
                         {branch.reviewCount.toLocaleString('id-ID')}
                       </span>
-                      <span className="text-xs text-slate-400 ml-1">ulasan</span>
+                      <span className="text-xs text-slate-500 ml-1">ulasan</span>
                     </td>
 
                     {/* Column 4: Complaint Count & Trend */}
@@ -377,22 +377,22 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
                           title="Klik untuk melihat detail list ulasan komplain unit usaha ini"
                           className={`px-2 py-0.5 rounded text-xs font-bold transition-all flex items-center gap-1 cursor-pointer hover:scale-105 hover:underline ${
                             branch.complaintCount > 50 
-                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30' 
-                              : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                              ? 'bg-rose-500/20 text-rose-700 border border-rose-500/40 hover:bg-rose-500/30' 
+                              : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
                           }`}
                         >
-                          <AlertTriangle className="w-3 h-3 text-rose-400" />
+                          <AlertTriangle className="w-3 h-3 text-rose-600" />
                           <span>{branch.complaintCount} Ulasan Komplain &raquo;</span>
                         </button>
 
                         {/* Trend indicator */}
                         {branch.trendScore === 'improving' && (
-                          <span className="text-emerald-400 flex items-center text-xs font-medium" title="Tren Meningkat (3 bulan)">
+                          <span className="text-emerald-600 flex items-center text-xs font-medium" title="Tren Meningkat (3 bulan)">
                             <TrendingUp className="w-3.5 h-3.5 mr-0.5" /> +3m
                           </span>
                         )}
                         {branch.trendScore === 'declining' && (
-                          <span className="text-rose-400 flex items-center text-xs font-bold animate-pulse" title="Tren Penurunan (3 bulan)">
+                          <span className="text-rose-600 flex items-center text-xs font-bold animate-pulse" title="Tren Penurunan (3 bulan)">
                             <TrendingDown className="w-3.5 h-3.5 mr-0.5" /> -3m
                           </span>
                         )}
@@ -414,16 +414,16 @@ export const BranchPerformanceTable: React.FC<BranchPerformanceTableProps> = ({
                       <div className="inline-flex items-center gap-1.5">
                         <button
                           onClick={() => onSelectBranch(branch, 'overview')}
-                          className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors shadow-xs gap-1"
+                          className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-50 text-slate-800 hover:bg-slate-100 transition-colors shadow-xs gap-1"
                         >
-                          <Eye className="w-3.5 h-3.5 text-amber-400" />
+                          <Eye className="w-3.5 h-3.5 text-amber-600" />
                           <span>Ringkasan</span>
                         </button>
                         <button
                           onClick={() => onSelectBranch(branch, 'complaints')}
-                          className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800 hover:bg-rose-900 transition-colors shadow-xs gap-1"
+                          className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-rose-100/80 text-rose-700 border border-rose-800 hover:bg-rose-50 transition-colors shadow-xs gap-1"
                         >
-                          <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
                           <span>Detail Isu</span>
                         </button>
                       </div>

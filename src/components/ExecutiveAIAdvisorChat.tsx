@@ -109,51 +109,51 @@ export const ExecutiveAIAdvisorChat: React.FC<ExecutiveAIAdvisorChatProps> = ({
           className="group flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-full shadow-2xl ring-2 ring-white/20 transition-all hover:scale-105"
         >
           <div className="relative">
-            <Bot className="w-5 h-5 text-white" />
+            <Bot className="w-5 h-5 text-slate-900" />
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <span className="text-xs tracking-tight">Asisten AI Eksekutif</span>
-          <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+          <Sparkles className="w-4 h-4 text-amber-700 animate-pulse" />
         </button>
       )}
 
       {/* Chat Drawer / Modal Widget */}
       {isOpen && (
-        <div className="w-[92vw] sm:w-[420px] h-[520px] bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn">
+        <div className="w-[92vw] sm:w-[420px] h-[520px] bg-white border border-slate-300/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn">
           
           {/* Header */}
-          <div className="p-3.5 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
+          <div className="p-3.5 border-b border-slate-200 bg-white/90 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-500/40 flex items-center justify-center text-blue-400">
-                <Bot className="w-4 h-4 text-blue-400" />
+              <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-500/40 flex items-center justify-center text-blue-600">
+                <Bot className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white flex items-center gap-1.5 leading-tight">
+                <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5 leading-tight">
                   Asisten AI Eksekutif
-                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-extrabold">ONLINE</span>
+                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-700 text-[9px] font-extrabold">ONLINE</span>
                 </h4>
-                <p className="text-[10px] text-slate-400 font-mono">
+                <p className="text-[10px] text-slate-500 font-mono">
                   Engine: {aiConfig.provider.toUpperCase()} ({aiConfig.model})
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              className="p-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-50"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Messages Container */}
-          <div className="p-4 flex-1 overflow-y-auto space-y-3.5 text-xs bg-slate-950/40">
+          <div className="p-4 flex-1 overflow-y-auto space-y-3.5 text-xs bg-slate-100/40">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'ai' && (
-                  <div className="w-6 h-6 rounded-md bg-blue-600/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-6 h-6 rounded-md bg-blue-600/20 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
                     <Bot className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -162,7 +162,7 @@ export const ExecutiveAIAdvisorChat: React.FC<ExecutiveAIAdvisorChatProps> = ({
                   className={`p-3 rounded-2xl max-w-[85%] leading-relaxed ${
                     msg.sender === 'user'
                       ? 'bg-blue-600 text-white rounded-br-none'
-                      : 'bg-slate-800/90 border border-slate-700/80 text-slate-200 rounded-bl-none'
+                      : 'bg-slate-50/90 border border-slate-300/80 text-slate-800 rounded-bl-none'
                   }`}
                 >
                   <p className="whitespace-pre-line">{msg.text}</p>
@@ -172,7 +172,7 @@ export const ExecutiveAIAdvisorChat: React.FC<ExecutiveAIAdvisorChatProps> = ({
                 </div>
 
                 {msg.sender === 'user' && (
-                  <div className="w-6 h-6 rounded-md bg-slate-700 text-slate-300 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-6 h-6 rounded-md bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
                     <User className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -180,8 +180,8 @@ export const ExecutiveAIAdvisorChat: React.FC<ExecutiveAIAdvisorChatProps> = ({
             ))}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-slate-400 text-xs p-2">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-400" />
+              <div className="flex items-center gap-2 text-slate-500 text-xs p-2">
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600" />
                 <span>AI sedang berpikir & menyusun respon...</span>
               </div>
             )}
@@ -190,9 +190,9 @@ export const ExecutiveAIAdvisorChat: React.FC<ExecutiveAIAdvisorChatProps> = ({
           </div>
 
           {/* Quick Prompts Dropdown */}
-          <div className="px-3 py-2 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+          <div className="px-3 py-2 bg-white border-t border-slate-200 flex items-center gap-2">
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-amber-400">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-amber-600">
                 <Sparkles className="w-3.5 h-3.5" />
               </div>
               <select
@@ -203,18 +203,18 @@ export const ExecutiveAIAdvisorChat: React.FC<ExecutiveAIAdvisorChatProps> = ({
                     e.target.value = '';
                   }
                 }}
-                className="w-full pl-8 pr-7 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs border border-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none truncate cursor-pointer transition-colors"
+                className="w-full pl-8 pr-7 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-lg text-xs border border-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none truncate cursor-pointer transition-colors"
               >
                 <option value="" disabled hidden>
                   💡 Pilih Rekomendasi Pertanyaan Cepat...
                 </option>
                 {quickPrompts.map((prompt, i) => (
-                  <option key={i} value={prompt} className="bg-slate-900 text-slate-200 py-1 text-xs">
+                  <option key={i} value={prompt} className="bg-white text-slate-800 py-1 text-xs">
                     {prompt}
                   </option>
                 ))}
               </select>
-              <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-slate-500">
                 <ChevronDown className="w-3.5 h-3.5" />
               </div>
             </div>
@@ -226,14 +226,14 @@ export const ExecutiveAIAdvisorChat: React.FC<ExecutiveAIAdvisorChatProps> = ({
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2"
+            className="p-3 bg-white border-t border-slate-200 flex items-center gap-2"
           >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Tanyakan analisis / minta buatkan email instruksi..."
-              className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               type="submit"

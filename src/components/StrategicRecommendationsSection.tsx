@@ -19,24 +19,24 @@ export const StrategicRecommendationsSection: React.FC<StrategicRecommendationsS
   };
 
   return (
-    <section className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl p-6 mb-8" id="rekomendasi-strategis">
+    <section className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 mb-8" id="rekomendasi-strategis">
       
       {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
               7. Rekomendasi Strategis Operasional Manajemen
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Langkah aksi operasional konkret yang diprioritaskan berdasarkan dampak pada kepuasan pelanggan dan perbaikan rating.
           </p>
         </div>
 
-        <div className="text-xs text-slate-400 font-medium">
-          Progress Eksekusi: <span className="font-bold text-white">{Object.values(completedMap).filter(Boolean).length} / {recommendations.length}</span> Selesai
+        <div className="text-xs text-slate-500 font-medium">
+          Progress Eksekusi: <span className="font-bold text-slate-900">{Object.values(completedMap).filter(Boolean).length} / {recommendations.length}</span> Selesai
         </div>
       </div>
 
@@ -63,13 +63,13 @@ export const StrategicRecommendationsSection: React.FC<StrategicRecommendationsS
                 {/* Checkbox toggle for execution */}
                 <button
                   onClick={() => toggleComplete(rec.id)}
-                  className="mt-1 text-slate-400 hover:text-emerald-600 transition-colors focus:outline-none"
+                  className="mt-1 text-slate-500 hover:text-emerald-600 transition-colors focus:outline-none"
                   title="Tandai Selesai Dieksekusi"
                 >
                   {isDone ? (
                     <CheckSquare className="w-6 h-6 text-emerald-600 fill-emerald-100" />
                   ) : (
-                    <Square className="w-6 h-6 text-slate-300 hover:text-slate-500" />
+                    <Square className="w-6 h-6 text-slate-700 hover:text-slate-500" />
                   )}
                 </button>
 
@@ -78,7 +78,7 @@ export const StrategicRecommendationsSection: React.FC<StrategicRecommendationsS
                   
                   {/* Badges Row */}
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="text-xs font-mono font-bold text-slate-400">
+                    <span className="text-xs font-mono font-bold text-slate-500">
                       Rekomendasi #{index + 1}
                     </span>
 
@@ -94,7 +94,7 @@ export const StrategicRecommendationsSection: React.FC<StrategicRecommendationsS
                     </span>
 
                     {/* Category Badge */}
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-900 text-white">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white text-slate-900">
                       {rec.category}
                     </span>
                   </div>

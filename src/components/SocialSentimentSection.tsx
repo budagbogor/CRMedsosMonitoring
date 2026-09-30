@@ -159,60 +159,60 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
 
   const getPlatformBadge = (platform: string) => {
     const p = platform.toLowerCase();
-    if (p.includes('threads')) return 'bg-slate-950 text-white border border-purple-500/70 font-extrabold shadow-sm';
+    if (p.includes('threads')) return 'bg-slate-100 text-slate-900 border border-purple-500/70 font-extrabold shadow-sm';
     if (p.includes('facebook')) return 'bg-blue-600 text-white';
     if (p.includes('instagram')) return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white';
-    if (p.includes('tiktok')) return 'bg-slate-950 text-cyan-400 border border-slate-700';
+    if (p.includes('tiktok')) return 'bg-slate-100 text-cyan-400 border border-slate-300';
     if (p.includes('youtube')) return 'bg-red-600 text-white';
     if (p.includes('x') || p.includes('twitter')) return 'bg-sky-600 text-white';
-    return 'bg-slate-800 text-white';
+    return 'bg-slate-50 text-slate-900';
   };
 
   return (
-    <section className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl p-6 mb-8">
+    <section className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 mb-8">
       
       {/* Section Title */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
               6. Analisis Media Sosial & Persepsi Publik (Brand Reputation Monitoring)
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Pemantauan lintas platform (Threads, TikTok, Instagram, YouTube, Berita Online, X/Twitter) mengenai isu viral, pertanyaan calon konsumen, dan keberhasilan kampanye publik.
           </p>
         </div>
       </div>
 
       {/* Sentiment Overview Gauge Bar */}
-      <div className="bg-slate-900 text-white p-5 rounded-2xl mb-6 shadow-inner border border-slate-800/80">
+      <div className="bg-white text-slate-900 p-5 rounded-2xl mb-6 shadow-inner border border-slate-200/80">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600">
               Distribusi Sentiment Publik Keseluruhan
             </h4>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Rerata sentimen dihitung dari mentions media sosial & pemberitaan digital 30 hari terakhir.
             </p>
           </div>
 
           <div className="flex items-center gap-4 text-xs font-bold">
-            <span className="flex items-center gap-1.5 text-emerald-400">
+            <span className="flex items-center gap-1.5 text-emerald-600">
               <ThumbsUp className="w-4 h-4" /> Positif {data.overallPositivePercentage}%
             </span>
-            <span className="flex items-center gap-1.5 text-slate-400">
+            <span className="flex items-center gap-1.5 text-slate-500">
               Netral {data.overallNeutralPercentage}%
             </span>
-            <span className="flex items-center gap-1.5 text-rose-400">
+            <span className="flex items-center gap-1.5 text-rose-600">
               <ThumbsDown className="w-4 h-4" /> Negatif {data.overallNegativePercentage}%
             </span>
           </div>
         </div>
 
         {/* Stacked Sentiment Progress Bar */}
-        <div className="w-full h-3 rounded-full overflow-hidden flex bg-slate-800">
+        <div className="w-full h-3 rounded-full overflow-hidden flex bg-slate-50">
           <div 
             style={{ width: `${data.overallPositivePercentage}%` }} 
             className="bg-emerald-500 h-full transition-all duration-500" 
@@ -235,28 +235,28 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {data.channels.map((channel, idx) => {
           return (
-            <div key={idx} className="p-4 rounded-xl border border-slate-800 bg-slate-950/70 hover:bg-slate-800/80 hover:border-slate-700 transition-all flex flex-col justify-between">
+            <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-100/70 hover:bg-slate-50/80 hover:border-slate-300 transition-all flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold shadow-xs ${getPlatformBadge(channel.platform)}`}>
                     {channel.platform}
                   </span>
                   <span className={`text-xs font-bold ${
-                    channel.sentimentScore >= 80 ? 'text-emerald-400' : channel.sentimentScore >= 65 ? 'text-amber-400' : 'text-rose-400'
+                    channel.sentimentScore >= 80 ? 'text-emerald-600' : channel.sentimentScore >= 65 ? 'text-amber-600' : 'text-rose-600'
                   }`}>
                     Skor {channel.sentimentScore}/100
                   </span>
                 </div>
 
-                <p className="text-xs font-bold text-slate-200 mt-2 line-clamp-2 leading-snug">
+                <p className="text-xs font-bold text-slate-800 mt-2 line-clamp-2 leading-snug">
                   {channel.recentHeadline}
                 </p>
               </div>
 
-              <div className="text-[11px] text-slate-400 mt-3 pt-2 border-t border-slate-800/60 space-y-1">
-                <p>Mentions: <span className="font-semibold text-white">{channel.mentionCount.toLocaleString('id-ID')}</span></p>
+              <div className="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-200/60 space-y-1">
+                <p>Mentions: <span className="font-semibold text-slate-900">{channel.mentionCount.toLocaleString('id-ID')}</span></p>
                 {channel.viralTopics && channel.viralTopics.length > 0 && (
-                  <p className="text-[10px] text-slate-400 font-medium truncate">
+                  <p className="text-[10px] text-slate-500 font-medium truncate">
                     🔥 Topik: {channel.viralTopics.join(', ')}
                   </p>
                 )}
@@ -271,17 +271,17 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-indigo-500/30">
           <div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-400">
-                <HelpCircle className="w-4 h-4 text-indigo-300" />
+              <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-600">
+                <HelpCircle className="w-4 h-4 text-indigo-700" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                   Pertanyaan Netizen & Prospek Pelanggan di Medsos
-                  <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-extrabold border border-amber-500/40">
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 text-[10px] font-extrabold border border-amber-500/40">
                     CS RESPONSE DESK
                   </span>
                 </h4>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   Postingan pertanyaan dari calon pelanggan di Threads, Instagram, TikTok, & Google Maps yang membutuhkan respon cepat
                 </p>
               </div>
@@ -289,13 +289,13 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
           </div>
 
           {/* Inquiry Status Filter Tabs */}
-          <div className="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800 self-start sm:self-auto text-xs">
+          <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 self-start sm:self-auto text-xs">
             <button
               onClick={() => setInquiryFilter('all')}
               className={`px-3 py-1 rounded-lg font-semibold transition-all ${
                 inquiryFilter === 'all'
                   ? 'bg-indigo-600 text-white shadow'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Semua ({inquiriesState.length})
@@ -305,7 +305,7 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
               className={`px-3 py-1 rounded-lg font-semibold transition-all flex items-center gap-1 ${
                 inquiryFilter === 'unanswered'
                   ? 'bg-amber-600 text-white shadow'
-                  : 'text-amber-400 hover:bg-amber-500/10'
+                  : 'text-amber-600 hover:bg-amber-500/10'
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
@@ -316,7 +316,7 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
               className={`px-3 py-1 rounded-lg font-semibold transition-all ${
                 inquiryFilter === 'responded'
                   ? 'bg-emerald-600 text-white shadow'
-                  : 'text-emerald-400 hover:bg-emerald-500/10'
+                  : 'text-emerald-600 hover:bg-emerald-500/10'
               }`}
             >
               Sudah Dijawab ({inquiriesState.filter((i) => i.status === 'Responded').length})
@@ -331,8 +331,8 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
               key={inquiry.id}
               className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
                 inquiry.status === 'Unanswered'
-                  ? 'bg-slate-950 border-amber-500/40 hover:border-amber-400'
-                  : 'bg-slate-900/80 border-slate-800 opacity-90'
+                  ? 'bg-slate-100 border-amber-500/40 hover:border-amber-400'
+                  : 'bg-white/80 border-slate-200 opacity-90'
               }`}
             >
               <div className="space-y-2.5">
@@ -343,21 +343,21 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getPlatformBadge(inquiry.platform)}`}>
                       {inquiry.platform}
                     </span>
-                    <span className="text-[11px] font-bold text-slate-200">
+                    <span className="text-[11px] font-bold text-slate-800">
                       {inquiry.authorHandle || inquiry.author}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
+                    <span className="text-[10px] text-slate-500 flex items-center gap-1 font-mono">
                       <Clock className="w-3 h-3 text-slate-500" /> {inquiry.date}
                     </span>
                     <button
                       onClick={() => handleToggleStatus(inquiry.id)}
                       className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
                         inquiry.status === 'Unanswered'
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
-                          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                          ? 'bg-amber-500/20 text-amber-700 border border-amber-500/40 hover:bg-amber-500/30'
+                          : 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/40 hover:bg-emerald-500/30'
                       }`}
                     >
                       {inquiry.status === 'Unanswered' ? '⏳ Belum Dijawab' : '✅ Sudah Dijawab'}
@@ -367,36 +367,36 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
 
                 {/* Target Branch & Category Tag */}
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-indigo-300 font-semibold">
+                  <span className="text-indigo-700 font-semibold">
                     📍 Target: {inquiry.targetBranch}
                   </span>
-                  <span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md text-[10px] font-medium border border-slate-700">
+                  <span className="px-2 py-0.5 bg-slate-50 text-slate-700 rounded-md text-[10px] font-medium border border-slate-300">
                     {inquiry.category}
                   </span>
                 </div>
 
                 {/* Question Text Box */}
-                <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-100 font-medium leading-relaxed">
+                <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-900 font-medium leading-relaxed">
                   "{inquiry.questionText}"
                 </div>
 
                 {/* Suggested AI Response Box */}
-                <div className="p-3 bg-indigo-950/40 rounded-xl border border-indigo-500/30 space-y-2">
-                  <div className="flex flex-wrap items-center justify-between gap-1 text-[10px] font-bold text-indigo-300">
+                <div className="p-3 bg-indigo-100/40 rounded-xl border border-indigo-500/30 space-y-2">
+                  <div className="flex flex-wrap items-center justify-between gap-1 text-[10px] font-bold text-indigo-700">
                     <span className="flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
                       Draf Respon Otomatis AI (Siap Kirim):
                     </span>
                     
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleCopyResponse(inquiry.id, inquiry.suggestedAIResponse)}
-                        className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[10px] transition-colors flex items-center gap-1 font-bold border border-slate-700"
+                        className="px-2 py-0.5 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded text-[10px] transition-colors flex items-center gap-1 font-bold border border-slate-300"
                         title="Salin teks draf balasan untuk dipaste manual di aplikasi medsos"
                       >
                         {copiedId === inquiry.id ? (
                           <>
-                            <Check className="w-3 h-3 text-emerald-300" />
+                            <Check className="w-3 h-3 text-emerald-700" />
                             <span>Tersalin!</span>
                           </>
                         ) : (
@@ -412,19 +412,19 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
                         disabled={sendingId === inquiry.id}
                         className={`px-2.5 py-0.5 rounded text-[10px] font-bold transition-all flex items-center gap-1 shadow-md ${
                           inquiry.status === 'Responded'
-                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/50'
+                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-500/50'
                             : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-500/20 active:scale-95'
                         }`}
                         title="Kirimkan draf balasan AI ini langsung ke akun medsos/Google Review netizen via Live API"
                       >
                         {sendingId === inquiry.id ? (
                           <>
-                            <RefreshCw className="w-3 h-3 animate-spin text-amber-300" />
+                            <RefreshCw className="w-3 h-3 animate-spin text-amber-700" />
                             <span>Mengirim...</span>
                           </>
                         ) : (
                           <>
-                            <Send className="w-3 h-3 text-amber-300" />
+                            <Send className="w-3 h-3 text-amber-700" />
                             <span>🚀 Kirim Balasan Langsung</span>
                           </>
                         )}
@@ -432,13 +432,13 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-slate-300 italic leading-relaxed">
+                  <p className="text-[11px] text-slate-700 italic leading-relaxed">
                     {inquiry.suggestedAIResponse}
                   </p>
 
                   {sentSuccessId === inquiry.id && (
-                    <div className="p-1.5 rounded-lg bg-emerald-950/80 border border-emerald-500/50 text-[10px] text-emerald-300 font-bold flex items-center gap-1.5 animate-fadeIn">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div className="p-1.5 rounded-lg bg-emerald-100/80 border border-emerald-500/50 text-[10px] text-emerald-700 font-bold flex items-center gap-1.5 animate-fadeIn">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span>Balasan AI terverifikasi & berhasil terkirim langsung ke {inquiry.author} ({inquiry.platform})!</span>
                     </div>
                   )}
@@ -455,19 +455,19 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Viral Complaints */}
-        <div className="p-4 rounded-xl bg-rose-950/30 border border-rose-800/60">
+        <div className="p-4 rounded-xl bg-rose-100/30 border border-rose-800/60">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-7 h-7 rounded-lg bg-rose-900/60 text-rose-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-rose-50/60 text-rose-600 flex items-center justify-center">
               <Flame className="w-4 h-4" />
             </div>
-            <h4 className="font-bold text-rose-300 text-sm">
+            <h4 className="font-bold text-rose-700 text-sm">
               Isu / Komplain Viral yang Perlu Atensi PR
             </h4>
           </div>
 
-          <ul className="space-y-2 text-xs text-rose-200">
+          <ul className="space-y-2 text-xs text-rose-800">
             {data.viralComplaints.map((item, i) => (
-              <li key={i} className="flex items-start gap-2 bg-slate-950/70 p-2.5 rounded-lg border border-rose-900/50">
+              <li key={i} className="flex items-start gap-2 bg-slate-100/70 p-2.5 rounded-lg border border-rose-900/50">
                 <span className="text-rose-500 font-bold">•</span>
                 <span>{item}</span>
               </li>
@@ -476,19 +476,19 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
         </div>
 
         {/* Successful Campaigns */}
-        <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-800/60">
+        <div className="p-4 rounded-xl bg-emerald-100/30 border border-emerald-800/60">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-7 h-7 rounded-lg bg-emerald-900/60 text-emerald-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50/60 text-emerald-600 flex items-center justify-center">
               <Award className="w-4 h-4" />
             </div>
-            <h4 className="font-bold text-emerald-300 text-sm">
+            <h4 className="font-bold text-emerald-700 text-sm">
               Kampanye & Respon Positif Publik Berhasil
             </h4>
           </div>
 
-          <ul className="space-y-2 text-xs text-emerald-200">
+          <ul className="space-y-2 text-xs text-emerald-800">
             {data.successfulCampaigns.map((item, i) => (
-              <li key={i} className="flex items-start gap-2 bg-slate-950/70 p-2.5 rounded-lg border border-emerald-900/50">
+              <li key={i} className="flex items-start gap-2 bg-slate-100/70 p-2.5 rounded-lg border border-emerald-900/50">
                 <span className="text-emerald-500 font-bold">•</span>
                 <span>{item}</span>
               </li>
@@ -499,8 +499,8 @@ export const SocialSentimentSection: React.FC<SocialSentimentSectionProps> = ({ 
       </div>
 
       {/* Executive Public Perception Note */}
-      <div className="mt-6 p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 leading-relaxed">
-        <span className="font-bold text-amber-400 uppercase tracking-wider block mb-1">
+      <div className="mt-6 p-4 rounded-xl bg-slate-100/80 border border-slate-200 text-xs text-slate-700 leading-relaxed">
+        <span className="font-bold text-amber-600 uppercase tracking-wider block mb-1">
           Kesimpulan Persepsi Brand di Mata Publik:
         </span>
         {data.publicPerceptionSummary}
