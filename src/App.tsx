@@ -556,91 +556,6 @@ export default function App() {
     };
   };
 
-  // Export handlers
-  const handleExportMarkdown = () => {
-    let md = `# LAPORAN INTELIJEN REPUTASI & PERFORMA CABANG
-**Merek Bisnis:** ${report.brandName}  
-**Tanggal Analisis:** ${report.analysisDate}  
-**Total Cabang Terdeteksi:** ${report.totalBranchesFound}  
-**Rata-rata Rating Jaringan:** ${report.avgNetworkRating.toFixed(2)} / 5.0 (Total Ulasan: ${report.totalReviewsAnalyzed.toLocaleString('id-ID')})
-
----
-
-## RINGKASAN EKSEKUTIF
-${report.executiveSummary}
-
----
-
-## 1. TABEL KOMPARASI PERFORMA CABANG
-| No | Nama Cabang & Lokasi | Rating Google | Jumlah Ulasan | Isu Komplain | Status Kinerja |
-|---|---|---|---|---|---|
-`;
-
-    report.branches.forEach((b, i) => {
-      md += `| ${i + 1} | ${b.name} (${b.city}) | ⭐ ${b.rating.toFixed(1)} | ${b.reviewCount} ulasan | ${b.complaintCount} isu | ${b.status} |\n`;
-    });
-
-    md += `
----
-
-## 2. ANALISIS KELUHAN & ULASAN POSITIF
-### Kategori Komplain Utama:
-`;
-
-    report.complaintCategories.forEach((cat) => {
-      md += `- **${cat.category}** (${cat.percentage}% - ${cat.count} Isu | Severity: ${cat.severity})\n`;
-      if (cat.sampleQuotes.length > 0) {
-        md += `  > "${cat.sampleQuotes[0]}"\n`;
-      }
-    });
-
-    md += `
----
-
-## 3. PATTERN KEDATANGAN & TREN KERAMAIAN
-- **Hari Paling Ramai:** ${report.trafficPattern.busyDays.join(', ')}
-- **Jam Tersibuk (Peak Hours):** ${report.trafficPattern.peakHours}
-- **Ringkasan Traffic:** ${report.trafficPattern.summary}
-
----
-
-## 4. ANALISIS MEDIA SOSIAL & PERSEPSI PUBLIK
-- **Sentimen Publik:** Positif ${report.socialSentiment.overallPositivePercentage}% | Netral ${report.socialSentiment.overallNeutralPercentage}% | Negatif ${report.socialSentiment.overallNegativePercentage}%
-- **Ringkasan Persepsi:** ${report.socialSentiment.publicPerceptionSummary}
-
----
-
-## 5. REKOMENDASI STRATEGIS OPERASIONAL
-`;
-
-    report.strategicRecommendations.forEach((rec, idx) => {
-      md += `${idx + 1}. **[Prioritas: ${rec.priority}] ${rec.title}**\n   - *Kategori:* ${rec.category}\n   - *Target Cabang:* ${rec.targetBranches.join(', ')}\n   - *Deskripsi:* ${rec.description}\n   - *Dampak Diharapkan:* ${rec.expectedImpact}\n\n`;
-    });
-
-    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Laporan_Intelijen_Reputasi_${report.brandName.replace(/[^a-zA-Z0-0]/g, '_')}.md`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleExportJSON = () => {
-    const jsonStr = JSON.stringify(report, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Raw_Data_Reputasi_${report.brandName.replace(/[^a-zA-Z0-0]/g, '_')}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white pb-16">
       
@@ -669,9 +584,6 @@ ${report.executiveSummary}
         currentBrand={report.brandName}
         onSearch={handleSearch}
         isLoading={searchState.isLoading}
-        onExportMarkdown={handleExportMarkdown}
-        onExportJSON={handleExportJSON}
-        onPrint={handlePrint}
         presetBrands={presetList}
         aiConfig={aiConfig}
         onOpenAISettings={() => setIsAISettingsOpen(true)}

@@ -6,9 +6,6 @@ interface HeaderProps {
   currentBrand: string;
   onSearch: (brandName: string) => void;
   isLoading: boolean;
-  onExportMarkdown: () => void;
-  onExportJSON: () => void;
-  onPrint: () => void;
   presetBrands: string[];
   aiConfig: AIConfig;
   onOpenAISettings: () => void;
@@ -19,9 +16,6 @@ export const Header: React.FC<HeaderProps> = ({
   currentBrand,
   onSearch,
   isLoading,
-  onExportMarkdown,
-  onExportJSON,
-  onPrint,
   presetBrands,
   aiConfig,
   onOpenAISettings,
@@ -139,33 +133,6 @@ export const Header: React.FC<HeaderProps> = ({
                 {getProviderIcon()} {aiConfig.provider.toUpperCase()}
               </span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            </button>
-
-            <button
-              onClick={onPrint}
-              title="Cetak Laporan PDF Eksekutif"
-              className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-slate-50 text-slate-800 hover:bg-slate-100 border border-slate-300 transition-colors gap-1.5"
-            >
-              <Printer className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden sm:inline">Cetak PDF</span>
-            </button>
-
-            <button
-              onClick={onExportMarkdown}
-              title="Ekspor Ringkasan Laporan Markdown"
-              className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-slate-50 text-slate-800 hover:bg-slate-100 border border-slate-300 transition-colors gap-1.5"
-            >
-              <Download className="w-3.5 h-3.5 text-amber-600" />
-              <span className="hidden sm:inline">MD</span>
-            </button>
-
-            <button
-              onClick={onExportJSON}
-              title="Download Raw Data JSON"
-              className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-300 transition-colors gap-1.5"
-            >
-              <Download className="w-3.5 h-3.5 text-blue-600" />
-              <span className="hidden sm:inline">JSON</span>
             </button>
           </div>
         </div>
