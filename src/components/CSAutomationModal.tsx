@@ -14,7 +14,8 @@ import {
   Check,
   Layers,
   FileText,
-  Plus
+  Plus,
+  Search
 } from 'lucide-react';
 import { CSAutomationConfig, FullIntelligenceReport } from '../types';
 
