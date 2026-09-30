@@ -437,7 +437,7 @@ Jika tidak ada komplain, kembalikan [].`;
 
     res.json({
       success: true,
-      message: `Berhasil scraping ${formattedReviews.length} ulasan dari Google Maps.${branchName ? ` Tersimpan ${savedCount} ulasan untuk cabang ${branchName}.` : ''}`,
+      message: `Berhasil scraping rating & ulasan dari Google Maps. Tersimpan ${savedCount} komplain untuk cabang ${branchName}.`,
       reviews: formattedReviews,
       savedCount,
       rating: overallRating,
