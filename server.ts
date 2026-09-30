@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import pg from "pg";
 import { createServer as createViteServer } from "vite";
 import { Resend } from "resend";
+import puppeteer from "puppeteer";
 import multer from "multer";
 import Papa from "papaparse";
 dotenv.config({ override: true });
@@ -68,9 +69,6 @@ async function initDB() {
         fetched_at TIMESTAMP,
         last_sync TIMESTAMP
       );
-      
-      ALTER TABLE branch_reviews ADD COLUMN IF NOT EXISTS rating NUMERIC(3, 1) DEFAULT 0;
-      ALTER TABLE branch_reviews ADD COLUMN IF NOT EXISTS review_count INTEGER DEFAULT 0;
     `);
     console.log("✅ Tabel branch_reviews di Cloud PostgreSQL siap digunakan.");
 
@@ -167,8 +165,8 @@ async function saveBranchReviewsToDB(branchName: string, reviews: any[], fetched
       ON CONFLICT (branch_name)
       DO UPDATE SET 
         reviews = CASE WHEN jsonb_array_length($2::jsonb) > 0 THEN $2::jsonb ELSE branch_reviews.reviews END, 
-        rating = CASE WHEN $3 > 0 THEN $3 ELSE branch_reviews.rating END, 
-        review_count = CASE WHEN $4 > 0 THEN $4 ELSE branch_reviews.review_count END, 
+        rating = $3, 
+        review_count = $4, 
         fetched_at = $5, 
         last_sync = NOW();
     `, [branchName, JSON.stringify(reviews), rating, reviewCount, fetchedAt]);
@@ -219,7 +217,6 @@ async function getBranchReviewsFromDB(branchName: string) {
 let isDbInitialized = false;
 
 async function initPostgresDB() {
-  return; // Disabled, initDB handles everything properly
   if (isDbInitialized) return;
   const pool = getPgPool();
   if (!pool) {
@@ -354,56 +351,96 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
     return;
   }
 
-    const { branchName } = req.body;
-    let formattedReviews: any[] = [];
-    let overallRating = 0;
-    let totalReviewCount = 0;
+  try {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=id-ID,id']
+    });
+    const page = await browser.newPage();
     
-    // Gunakan Gemini untuk mengambil keluhan / komplain beserta rating dan jumlah ulasan
+    // Set a realistic user agent
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    
+    // Navigate to the provided URL
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+    
+    // Wait for review elements (common class in Google Maps is .wiI7pd or something similar, we will try multiple selectors)
     try {
-      const keyToUse = process.env.GEMINI_API_KEY;
-      if (keyToUse && branchName) {
-        const ai = getGeminiClient(keyToUse);
-        const REVIEW_FETCH_PROMPT = `Cari informasi Google Maps untuk bisnis: "${branchName}".
-Dapatkan Rating Bintang Rata-rata dan Total Jumlah Ulasan mereka saat ini.
-Selain itu, cari ulasan Google Review 6 bulan terakhir. Ambil SEMUA ulasan KELUHAN/KRITIK/SARAN (rating 1-5).
-Salin teks ulasan persis.
-Kembalikan JSON object persis seperti ini:
-{
-  "rating": 4.5,
-  "reviewCount": 120,
-  "reviews": [{"author":"Nama","rating":4,"date":"...","text":"...","sentiment":"negative"}]
-}
-Jika tidak ada komplain, kosongkan array reviews: []. Pastikan rating dan reviewCount selalu terisi angka yang valid.`;
-
-        const response = await ai.models.generateContent({
-          model: "gemini-3.6-flash",
-          contents: REVIEW_FETCH_PROMPT,
-          config: { tools: [{ googleSearch: {} }] },
-        });
-        const cleaned = (response.text || "{}").replace(/```json/gi, "").replace(/```/g, "").trim();
-        const match = cleaned.match(/\{[\s\S]*\}/);
-        if (match) {
-          const parsed = JSON.parse(match[0]);
-          formattedReviews = Array.isArray(parsed.reviews) ? parsed.reviews : [];
-          overallRating = parseFloat(parsed.rating) || 0;
-          totalReviewCount = parseInt(parsed.reviewCount) || 0;
-        }
-      }
-    } catch (geminiErr: any) {
-      console.error(`[Scrape] Gemini fetch error for ${branchName}:`, geminiErr.message);
+      await page.waitForSelector('.wiI7pd', { timeout: 10000 });
+    } catch (e) {
+      console.log('Timeout waiting for .wiI7pd selector. The page structure might be different atau tidak ada review.');
     }
 
+    // Extract review texts, rating, and review count
+    const extractedData = await page.evaluate(() => {
+      // Common class name for Google Maps review text
+      const reviewElements = document.querySelectorAll('.wiI7pd');
+      const reviews: any[] = [];
+      reviewElements.forEach((el) => {
+        if (el.textContent && el.textContent.trim().length > 0) {
+          reviews.push({ text: el.textContent.trim() });
+        }
+      });
+
+      // Try to extract overall rating and review count from the page
+      let overallRating = 0;
+      let totalReviewCount = 0;
+      
+      try {
+        // Find rating via aria-label
+        const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+        if (ratingEl) {
+          const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+          if (m) overallRating = parseFloat(m[1].replace(',', '.'));
+        }
+        
+        // Find review count via aria-label
+        const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+        if (countEl) {
+          const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+          if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
+        }
+
+        // Fallback to text matching if not found
+        if (!overallRating || !totalReviewCount) {
+          const mainText = document.body.innerText;
+          const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+          if (match) {
+            if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
+            if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+          }
+        }
+      } catch (e) {}
+
+      return { reviews, overallRating, totalReviewCount };
+    });
+
+    const reviews = extractedData.reviews;
+    const overallRating = extractedData.overallRating;
+    const totalReviewCount = extractedData.totalReviewCount;
+
+    await browser.close();
+
+    // Format reviews for Database if branchName is provided
+    const { branchName } = req.body;
     let savedCount = 0;
-    if (branchName && (formattedReviews.length > 0 || totalReviewCount > 0)) {
+    if (branchName && (reviews.length > 0 || totalReviewCount > 0)) {
+      const formattedReviews = reviews.map(r => ({
+        author: "Google User (Scraped)",
+        rating: 0,
+        date: new Date().toISOString(),
+        text: r.text,
+        sentiment: "neutral",
+        tags: []
+      }));
       await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), overallRating, totalReviewCount);
       savedCount = formattedReviews.length;
     }
 
     res.json({
       success: true,
-      message: `Berhasil scraping rating & ulasan dari Google Maps. Tersimpan ${savedCount} komplain untuk cabang ${branchName}.`,
-      reviews: formattedReviews,
+      message: `Berhasil scraping ${reviews.length} ulasan dari Google Maps.${branchName ? ` Tersimpan ${savedCount} ulasan untuk cabang ${branchName}.` : ''}`,
+      reviews: reviews,
       savedCount,
       rating: overallRating,
       reviewCount: totalReviewCount
@@ -411,115 +448,6 @@ Jika tidak ada komplain, kosongkan array reviews: []. Pastikan rating dan review
 
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || 'Terjadi kesalahan saat scraping.' });
-  }
-});
-// Task Tracker for Background Scraping
-const scrapeTasks: Record<string, { total: number; current: number; status: 'running' | 'completed' | 'error', error?: string }> = {};
-
-app.get(["/api/scrape-status/:taskId", "/scrape-status/:taskId"], (req, res) => {
-  const taskId = req.params.taskId;
-  if (!scrapeTasks[taskId]) {
-    return res.status(404).json({ error: "Task not found" });
-  }
-  res.json(scrapeTasks[taskId]);
-});
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// API Bulk Scrape Google Maps Reviews (From Existing Table JSON)
-app.post(["/api/bulk-scrape-json", "/bulk-scrape-json"], express.json(), async (req, res) => {
-  const { branches } = req.body;
-  if (!branches || !Array.isArray(branches)) {
-    res.status(400).json({ success: false, error: "Data branches tidak valid." });
-    return;
-  }
-
-  const taskId = `scrape-${Date.now()}`;
-  scrapeTasks[taskId] = { total: branches.length, current: 0, status: 'running' };
-
-  // Send success response immediately so the UI doesn't hang
-  res.json({ 
-    success: true, 
-    message: `Memulai scraping untuk ${branches.length} cabang di background.`,
-    taskId: taskId
-  });
-
-  try {    for (const branch of branches) {
-      const branchName = branch.name?.trim();
-      let url = branch.mapsUrl?.trim();
-      
-      if (!url || !url.startsWith('http')) {
-        // Fallback to searching Google Maps if no direct URL is provided
-        url = `https://www.google.com/maps/search/${encodeURIComponent(branchName + ' ' + (branch.city || ''))}`;
-      }
-
-      if (!branchName) {
-        console.log(`[Bulk Scrape JSON] Melewati baris tidak valid: nama kosong`);
-        scrapeTasks[taskId].current++;
-        continue;
-      }
-
-      console.log(`[Bulk Scrape JSON] Memproses cabang: ${branchName}`);
-      
-      try {
-        let formattedReviews: any[] = [];
-        let overallRating = 0;
-        let totalReviewCount = 0;
-        
-        try {
-          const keyToUse = process.env.GEMINI_API_KEY;
-          if (keyToUse) {
-            const ai = getGeminiClient(keyToUse);
-            const REVIEW_FETCH_PROMPT = `Cari informasi Google Maps untuk bisnis: "${branchName} ${branch.city || ""}".
-Dapatkan Rating Bintang Rata-rata dan Total Jumlah Ulasan mereka saat ini.
-Selain itu, cari ulasan Google Review 6 bulan terakhir. Ambil SEMUA ulasan KELUHAN/KRITIK/SARAN (rating 1-5).
-Salin teks ulasan persis.
-Kembalikan JSON object persis seperti ini:
-{
-  "rating": 4.5,
-  "reviewCount": 120,
-  "reviews": [{"author":"Nama","rating":4,"date":"...","text":"...","sentiment":"negative"}]
-}
-Jika tidak ada komplain, kosongkan array reviews: []. Pastikan rating dan reviewCount selalu terisi angka yang valid.`;
-
-            const response = await ai.models.generateContent({
-              model: "gemini-3.6-flash",
-              contents: REVIEW_FETCH_PROMPT,
-              config: { tools: [{ googleSearch: {} }] },
-            });
-            const cleaned = (response.text || "{}").replace(/```json/gi, "").replace(/```/g, "").trim();
-            const match = cleaned.match(/\{[\s\S]*\}/);
-            if (match) {
-              const parsed = JSON.parse(match[0]);
-              formattedReviews = Array.isArray(parsed.reviews) ? parsed.reviews : [];
-              overallRating = parseFloat(parsed.rating) || 0;
-              totalReviewCount = parseInt(parsed.reviewCount) || 0;
-            }
-          }
-        } catch (geminiErr: any) {
-          console.error(`[Bulk Scrape JSON] Gemini fetch error for ${branchName}:`, geminiErr.message);
-        }
-
-        if (formattedReviews.length > 0 || totalReviewCount > 0) {
-          await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), overallRating, totalReviewCount);
-          console.log(`[Bulk Scrape JSON] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan komplain (dan rating ${overallRating}).`);
-        } else {
-          console.log(`[Bulk Scrape JSON] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
-        }
-        
-      } catch (err: any) {
-        console.error(`[Bulk Scrape JSON Error] ${branchName}:`, err.message);
-      }
-      
-      scrapeTasks[taskId].current++;
-      await delay(4000); // 4-second delay to avoid Gemini rate limits
-    }
-    
-    scrapeTasks[taskId].status = 'completed';
-  } catch (err: any) {
-    console.error("[Bulk Scrape JSON Fatal Error]:", err);
-    scrapeTasks[taskId].status = 'error';
-    scrapeTasks[taskId].error = err.message;
   }
 });
 
@@ -537,95 +465,111 @@ app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (
       header: true,
       skipEmptyLines: true,
       complete: async (results) => {
-          const taskId = `scrape-${Date.now()}`;
-          scrapeTasks[taskId] = { total: rows.length, current: 0, status: 'running' };
+        // Send success response immediately so the UI doesn't hang
+        res.json({ 
+          success: true, 
+          message: `File CSV diterima. Memulai scraping untuk ${results.data.length} cabang di background.`,
+          taskId: `scrape-${Date.now()}`
+        });
 
-          // Send success response immediately so the UI doesn't hang
-          res.json({ 
-            success: true, 
-            message: `File CSV diterima. Memulai scraping untuk ${rows.length} cabang di background.`,
-            taskId: taskId
+        const rows = results.data as Array<{NamaCabang: string, Kota: string, URLGoogleMaps: string}>;
+        
+        let browser: any = null;
+        try {
+          browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=id-ID,id']
           });
-          
-          try {
-            for (const row of rows) {
-              const branchName = row.NamaCabang?.trim();
-              const url = row.URLGoogleMaps?.trim();
-              
-              if (!branchName || !url || !url.startsWith('http')) {
-                console.log(`[Bulk Scrape] Melewati baris tidak valid: ${branchName}`);
-                scrapeTasks[taskId].current++;
-                continue;
-              }
 
-              console.log(`[Bulk Scrape] Memproses cabang: ${branchName}`);
+          for (const row of rows) {
+            const branchName = row.NamaCabang?.trim();
+            const url = row.URLGoogleMaps?.trim();
+            
+            if (!branchName || !url || !url.startsWith('http')) {
+              console.log(`[Bulk Scrape] Melewati baris tidak valid: ${branchName}`);
+              continue;
+            }
+
+            console.log(`[Bulk Scrape] Memproses cabang: ${branchName}`);
+            
+            try {
+              const page = await browser.newPage();
+              await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+              await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
               
               try {
-                let formattedReviews: any[] = [];
+                await page.waitForSelector('.wiI7pd', { timeout: 10000 });
+              } catch (e) {
+                console.log(`[Bulk Scrape] ${branchName}: Timeout menunggu .wiI7pd`);
+              }
+
+              const extractedData = await page.evaluate(() => {
+                const reviewElements = document.querySelectorAll('.wiI7pd');
+                const reviews: any[] = [];
+                reviewElements.forEach((el) => {
+                  if (el.textContent && el.textContent.trim().length > 0) {
+                    reviews.push({ text: el.textContent.trim() });
+                  }
+                });
+
                 let overallRating = 0;
                 let totalReviewCount = 0;
-                
                 try {
-                  const keyToUse = process.env.GEMINI_API_KEY;
-                  if (keyToUse) {
-                    const ai = getGeminiClient(keyToUse);
-                    const REVIEW_FETCH_PROMPT = `Cari ulasan Google Review 6 bulan terakhir untuk bisnis: "${branchName} ${row.Kota || ""}".
-Ambil SEMUA ulasan KELUHAN/KRITIK/SARAN dari rating 1 sampai 5. Salin teks persis. 
-Kembalikan JSON array persis seperti ini: [{"author":"Nama","rating":4,"date":"...","text":"...","sentiment":"negative"}]. 
-Jika tidak ada komplain, kembalikan [].`;
-
-                    const response = await ai.models.generateContent({
-                      model: "gemini-3.6-flash",
-                  const REVIEW_FETCH_PROMPT = `Cari informasi Google Maps untuk bisnis: "${branchName} ${row.Kota || ""}".
-Dapatkan Rating Bintang Rata-rata dan Total Jumlah Ulasan mereka saat ini.
-Selain itu, cari ulasan Google Review 6 bulan terakhir. Ambil SEMUA ulasan KELUHAN/KRITIK/SARAN (rating 1-5).
-Salin teks ulasan persis.
-Kembalikan JSON object persis seperti ini:
-{
-  "rating": 4.5,
-  "reviewCount": 120,
-  "reviews": [{"author":"Nama","rating":4,"date":"...","text":"...","sentiment":"negative"}]
-}
-Jika tidak ada komplain, kosongkan array reviews: []. Pastikan rating dan reviewCount selalu terisi angka yang valid.`;
-
-                  const response = await ai.models.generateContent({
-                    model: "gemini-3.6-flash",
-                    contents: REVIEW_FETCH_PROMPT,
-                    config: { tools: [{ googleSearch: {} }] },
-                  });
-                  const cleaned = (response.text || "{}").replace(/```json/gi, "").replace(/```/g, "").trim();
-                  const match = cleaned.match(/\{[\s\S]*\}/);
-                  if (match) {
-                    const parsed = JSON.parse(match[0]);
-                    formattedReviews = Array.isArray(parsed.reviews) ? parsed.reviews : [];
-                    overallRating = parseFloat(parsed.rating) || 0;
-                    totalReviewCount = parseInt(parsed.reviewCount) || 0;
+                  // Find rating via aria-label
+                  const ratingEl = document.querySelector('span[aria-label*="bintang"], span[aria-label*="stars"]');
+                  if (ratingEl) {
+                    const m = ratingEl.getAttribute('aria-label')?.match(/([1-5][.,][0-9])/);
+                    if (m) overallRating = parseFloat(m[1].replace(',', '.'));
                   }
+                  
+                  // Find review count via aria-label
+                  const countEl = document.querySelector('span[aria-label*="ulasan"], span[aria-label*="reviews"], button[aria-label*="ulasan"], button[aria-label*="reviews"]');
+                  if (countEl) {
+                    const m = countEl.getAttribute('aria-label')?.match(/([\d,.]+)/);
+                    if (m) totalReviewCount = parseInt(m[1].replace(/[.,]/g, ''), 10);
                   }
-                } catch (geminiErr: any) {
-                  console.error(`[Bulk Scrape] Gemini fetch error for ${branchName}:`, geminiErr.message);
-                }
 
-                if (formattedReviews.length > 0 || totalReviewCount > 0) {
-                  await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), overallRating, totalReviewCount);
-                  console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan komplain (dan rating ${overallRating}).`);
-                } else {
-                  console.log(`[Bulk Scrape] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
-                }
-                
-              } catch (err: any) {
-                console.error(`[Bulk Scrape] ${branchName}:`, err.message);
+                  // Fallback to text matching if not found
+                  if (!overallRating || !totalReviewCount) {
+                    const mainText = document.body.innerText;
+                    const match = mainText.match(/([1-5][.,][0-9])\s*(?:stars|bintang)?\n*\s*\(([\d,.]+)(?:\s*ulasan|\s*reviews)?\)/i);
+                    if (match) {
+                      if (!overallRating) overallRating = parseFloat(match[1].replace(',', '.'));
+                      if (!totalReviewCount) totalReviewCount = parseInt(match[2].replace(/[.,]/g, ''), 10);
+                    }
+                  }
+                } catch (e) {}
+
+                return { reviews, overallRating, totalReviewCount };
+              });
+
+              // Format reviews for Database
+              const formattedReviews = extractedData.reviews.map(r => ({
+                author: "Google User (Scraped)",
+                rating: 0,
+                date: new Date().toISOString(),
+                text: r.text,
+                sentiment: "neutral",
+                tags: []
+              }));
+
+              if (formattedReviews.length > 0 || extractedData.totalReviewCount > 0) {
+                await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
+                console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan (dan meta-data).`);
+              } else {
+                console.log(`[Bulk Scrape] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
               }
               
-              scrapeTasks[taskId].current++;
-              await delay(4000); // 4-second delay to avoid Gemini rate limits
+              await page.close();
+            } catch (err: any) {
+              console.error(`[Bulk Scrape Error] ${branchName}:`, err.message);
             }
-            scrapeTasks[taskId].status = 'completed';
-          } catch (err: any) {
-            console.error("[Bulk Scrape Fatal Error]:", err);
-            scrapeTasks[taskId].status = 'error';
-            scrapeTasks[taskId].error = err.message;
           }
+        } catch (err) {
+          console.error("[Bulk Scrape Fatal Error]:", err);
+        } finally {
+          if (browser) await browser.close();
+        }
       },
       error: (error: any) => {
         res.status(500).json({ success: false, error: 'Gagal mem-parsing CSV: ' + error.message });
