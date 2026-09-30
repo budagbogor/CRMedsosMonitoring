@@ -163,7 +163,12 @@ async function saveBranchReviewsToDB(branchName: string, reviews: any[], fetched
       INSERT INTO branch_reviews (branch_name, reviews, rating, review_count, fetched_at, last_sync)
       VALUES ($1, $2, $3, $4, $5, NOW())
       ON CONFLICT (branch_name)
-      DO UPDATE SET reviews = $2, rating = $3, review_count = $4, fetched_at = $5, last_sync = NOW();
+      DO UPDATE SET 
+        reviews = CASE WHEN jsonb_array_length($2::jsonb) > 0 THEN $2::jsonb ELSE branch_reviews.reviews END, 
+        rating = $3, 
+        review_count = $4, 
+        fetched_at = $5, 
+        last_sync = NOW();
     `, [branchName, JSON.stringify(reviews), rating, reviewCount, fetchedAt]);
     console.log(`  💾 Ulasan ${branchName} tersimpan di Cloud PostgreSQL Sumobase`);
   } catch (err: any) {
@@ -419,7 +424,7 @@ app.post(["/api/scrape-google-reviews", "/scrape-google-reviews"], async (req, r
     // Format reviews for Database if branchName is provided
     const { branchName } = req.body;
     let savedCount = 0;
-    if (branchName && reviews.length > 0) {
+    if (branchName && (reviews.length > 0 || totalReviewCount > 0)) {
       const formattedReviews = reviews.map(r => ({
         author: "Google User (Scraped)",
         rating: 0,
@@ -548,9 +553,9 @@ app.post(["/api/bulk-scrape", "/bulk-scrape"], upload.single('csvFile'), async (
                 tags: []
               }));
 
-              if (formattedReviews.length > 0) {
+              if (formattedReviews.length > 0 || extractedData.totalReviewCount > 0) {
                 await saveBranchReviewsToDB(branchName, formattedReviews, new Date().toISOString(), extractedData.overallRating, extractedData.totalReviewCount);
-                console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan.`);
+                console.log(`[Bulk Scrape] ✅ ${branchName}: Tersimpan ${formattedReviews.length} ulasan (dan meta-data).`);
               } else {
                 console.log(`[Bulk Scrape] ⚠️ ${branchName}: Tidak ada ulasan ditemukan.`);
               }
