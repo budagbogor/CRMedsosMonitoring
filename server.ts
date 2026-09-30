@@ -164,7 +164,7 @@ async function saveBranchReviewsToDB(branchName: string, reviews: any[], fetched
       VALUES ($1, $2, $3, $4, $5, NOW())
       ON CONFLICT (branch_name)
       DO UPDATE SET 
-        reviews = CASE WHEN jsonb_array_length($2::jsonb) > 0 THEN $2::jsonb ELSE branch_reviews.reviews END, 
+        reviews = $2::jsonb, 
         rating = $3, 
         review_count = $4, 
         fetched_at = $5, 
@@ -283,6 +283,27 @@ app.get(["/api/saved-reviews", "/saved-reviews"], async (req, res) => {
     });
   } catch (err: any) {
     res.status(500).json({ error: "Gagal membaca database." });
+  }
+});
+
+// Endpoint untuk mengambil seluruh data performa cabang yang tersimpan
+app.get(["/api/all-branches", "/all-branches"], async (req, res) => {
+  try {
+    const pool = getPgPool();
+    if (pool) {
+      const result = await pool.query(`SELECT branch_name, rating, review_count, jsonb_array_length(reviews) as complaint_count FROM branch_reviews`);
+      const branchesData = result.rows.map(row => ({
+        branchName: row.branch_name,
+        rating: Number(row.rating) || 0,
+        reviewCount: Number(row.review_count) || 0,
+        complaintCount: Number(row.complaint_count) || 0
+      }));
+      res.json({ success: true, branches: branchesData });
+    } else {
+      res.json({ success: true, branches: [] });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: "Gagal membaca dari database PostgreSQL." });
   }
 });
 

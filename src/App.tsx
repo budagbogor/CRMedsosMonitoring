@@ -34,6 +34,37 @@ export default function App() {
     setSelectedBranchTab(initialTab);
   };
 
+  // Sync with Database on Initial Load
+  useEffect(() => {
+    fetch('/api/all-branches')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.branches && data.branches.length > 0) {
+          setReport(prev => {
+            const updatedBranches = prev.branches.map(branch => {
+              const dbBranch = data.branches.find((b: any) => b.branchName === branch.name);
+              if (dbBranch && dbBranch.rating > 0) {
+                let newStatus: any = 'Medium';
+                if (dbBranch.rating >= 4.7 && dbBranch.complaintCount < 5) newStatus = 'Top';
+                else if (dbBranch.rating <= 4.4 || dbBranch.complaintCount > 10) newStatus = 'Attention Required';
+
+                return {
+                  ...branch,
+                  rating: dbBranch.rating,
+                  reviewCount: dbBranch.reviewCount,
+                  complaintCount: dbBranch.complaintCount,
+                  status: newStatus
+                };
+              }
+              return branch;
+            });
+            return { ...prev, branches: updatedBranches };
+          });
+        }
+      })
+      .catch(err => console.error("Error loading initial branch data:", err));
+  }, []);
+
   // AI Configuration State
   const [aiConfig, setAiConfig] = useState<AIConfig>(loadAIConfig);
   const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
