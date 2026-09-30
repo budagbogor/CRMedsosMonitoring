@@ -595,6 +595,7 @@ export default function App() {
       <BulkScrapeModal
         isOpen={isBulkScrapeOpen}
         onClose={() => setIsBulkScrapeOpen(false)}
+        branches={report?.branches || []}
       />
 
       {/* Header Bar */}

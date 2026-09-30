@@ -69,6 +69,9 @@ async function initDB() {
         fetched_at TIMESTAMP,
         last_sync TIMESTAMP
       );
+      
+      ALTER TABLE branch_reviews ADD COLUMN IF NOT EXISTS rating NUMERIC(3, 1) DEFAULT 0;
+      ALTER TABLE branch_reviews ADD COLUMN IF NOT EXISTS review_count INTEGER DEFAULT 0;
     `);
     console.log("✅ Tabel branch_reviews di Cloud PostgreSQL siap digunakan.");
 
@@ -217,6 +220,7 @@ async function getBranchReviewsFromDB(branchName: string) {
 let isDbInitialized = false;
 
 async function initPostgresDB() {
+  return; // Disabled, initDB handles everything properly
   if (isDbInitialized) return;
   const pool = getPgPool();
   if (!pool) {
