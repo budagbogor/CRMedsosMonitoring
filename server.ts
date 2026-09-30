@@ -5,6 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import pg from "pg";
 import { createServer as createViteServer } from "vite";
+import { Resend } from "resend";
 
 dotenv.config();
 
@@ -239,6 +240,42 @@ function getGeminiClient(customApiKey?: string): GoogleGenAI {
 // API Health Check
 app.get(["/api/health", "/health"], (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// API Send Email via Resend
+app.post(["/api/send-email", "/send-email"], async (req, res) => {
+  try {
+    const { to, subject, html } = req.body;
+    
+    if (!to || !subject || !html) {
+      res.status(400).json({ success: false, error: "to, subject, dan html wajib diisi." });
+      return;
+    }
+
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      res.status(500).json({ success: false, error: "RESEND_API_KEY tidak dikonfigurasi di server." });
+      return;
+    }
+
+    const resend = new Resend(apiKey);
+    
+    const { data, error } = await resend.emails.send({
+      from: "AI CS Automation <onboarding@resend.dev>",
+      to: to.split(',').map((email: string) => email.trim()),
+      subject: subject,
+      html: html,
+    });
+
+    if (error) {
+      res.status(400).json({ success: false, error: error.message });
+      return;
+    }
+
+    res.json({ success: true, data });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // API Test Connection Endpoint (Accurate Real-time Ping)

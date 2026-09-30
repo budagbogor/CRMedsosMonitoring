@@ -134,22 +134,51 @@ export const CSAutomationModal: React.FC<CSAutomationModalProps> = ({
     }
   };
 
-  const handleRunSimulation = () => {
+  const handleRunSimulation = async () => {
     setIsSimulating(true);
     setSimulationResult(null);
 
-    setTimeout(() => {
-      // Pick a sample complaint/review based on report data
-      const sampleBranch = report.branches[0] || { name: 'Cabang Jakarta Selatan', rating: 3.2 };
-      const sampleQuote = report.complaintCategories[0]?.sampleQuotes[0] || 'Waktu tunggu antrean lama sekali melebihi 2 jam tanpa kepastian slot booking.';
+    // Pick a sample complaint/review based on report data
+    const sampleBranch = report.branches[0] || { name: 'Cabang Jakarta Selatan', rating: 3.2 };
+    const sampleQuote = report.complaintCategories[0]?.sampleQuotes[0] || 'Waktu tunggu antrean lama sekali melebihi 2 jam tanpa kepastian slot booking.';
 
-      const targetEmails = (formData.csEmails && formData.csEmails.length > 0)
-        ? formData.csEmails.join(', ')
-        : (formData.csEmail || 'budagbogor@gmail.com');
+    const targetEmails = (formData.csEmails && formData.csEmails.length > 0)
+      ? formData.csEmails.join(', ')
+      : (formData.csEmail || 'budagbogor@gmail.com');
+
+    try {
+      const emailHtml = `
+        <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+          <div style="background-color: #ef4444; padding: 16px; color: white;">
+            <h2 style="margin: 0;">🚨 Alert Komplain Pelanggan (${sampleBranch.name})</h2>
+          </div>
+          <div style="padding: 24px;">
+            <p><strong>Platform:</strong> TikTok & Google Reviews</p>
+            <p><strong>Customer:</strong> @BudiPratama_99</p>
+            <p><strong>Ulasan:</strong></p>
+            <blockquote style="background: #f1f5f9; padding: 12px; border-left: 4px solid #94a3b8; font-style: italic;">
+              "${sampleQuote}"
+            </blockquote>
+            <p><strong>Rekomendasi AI:</strong> Segera hubungi pelanggan & berikan slot booking prioritas dalam 60 menit.</p>
+          </div>
+        </div>
+      `;
+
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: targetEmails,
+          subject: `🚨 [URGENT] Komplain Baru - ${sampleBranch.name}`,
+          html: emailHtml,
+        }),
+      });
+
+      const data = await response.json();
 
       setIsSimulating(false);
       setSimulationResult({
-        success: true,
+        success: data.success,
         sentTo: targetEmails,
         timestamp: new Date().toLocaleString('id-ID', {
           dateStyle: 'medium',
@@ -165,7 +194,11 @@ export const CSAutomationModal: React.FC<CSAutomationModalProps> = ({
           urgency: 'HIGH',
         },
       });
-    }, 1800);
+    } catch (err) {
+      console.error(err);
+      setIsSimulating(false);
+      alert('Gagal mengirim email: ' + String(err));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
