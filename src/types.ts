@@ -96,6 +96,26 @@ export interface StrategicRecommendation {
   completed?: boolean;
 }
 
+export interface HistoricalDataPoint {
+  month: string;
+  rating: number;
+  complaints: number;
+  topPerformanceScore?: number;
+  totalReviewsMonth?: number;
+}
+
+export interface HistoricalAnalyticsReport {
+  monthlyData: HistoricalDataPoint[];
+  ratingGrowthText: string;
+  complaintReductionText: string;
+  slaTargetText: string;
+  netRatingDelta: number;
+  complaintReductionPercent: number;
+  projectedRating: number;
+  lastCalculatedAt?: string;
+  isRealDataSynced?: boolean;
+}
+
 export interface FullIntelligenceReport {
   brandName: string;
   analysisDate: string;
@@ -109,6 +129,7 @@ export interface FullIntelligenceReport {
   trafficPattern: TrafficPattern;
   socialSentiment: SocialSentimentData;
   strategicRecommendations: StrategicRecommendation[];
+  historicalAnalytics?: HistoricalAnalyticsReport;
   groundingSources?: Array<{ title: string; uri: string }>;
   lastAISyncTimestamp?: string;
 }

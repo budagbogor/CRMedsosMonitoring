@@ -127,6 +127,182 @@ export default function App() {
 
   // Performance AI Sync State
   const [isSyncingPerformance, setIsSyncingPerformance] = useState(false);
+  const [isSyncingHistorical, setIsSyncingHistorical] = useState(false);
+  const [isSyncingComplaints, setIsSyncingComplaints] = useState(false);
+  const [complaintsLastSyncedAt, setComplaintsLastSyncedAt] = useState<string | undefined>(undefined);
+
+  const handleSyncComplaintCategoriesAI = async () => {
+    if (isSyncingComplaints || !report.branches || report.branches.length === 0) return;
+    setIsSyncingComplaints(true);
+    try {
+      const res = await fetch('/api/sync-complaint-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brandName: report.brandName,
+          branches: report.branches,
+          provider: aiConfig.provider,
+          model: aiConfig.model,
+          apiKey: aiConfig.apiKey,
+          baseUrl: aiConfig.baseUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.categories && Array.isArray(data.categories)) {
+        setReport((prev) => ({
+          ...prev,
+          complaintCategories: data.categories,
+        }));
+        setComplaintsLastSyncedAt(data.lastCalculatedAt || new Date().toLocaleTimeString('id-ID'));
+      }
+    } catch (err: any) {
+      console.error('Error syncing complaint categories:', err);
+    } finally {
+      setIsSyncingComplaints(false);
+    }
+  };
+
+  // Traffic Pattern Footfall AI Sync State
+  const [isSyncingTraffic, setIsSyncingTraffic] = useState(false);
+  const [trafficLastSyncedAt, setTrafficLastSyncedAt] = useState<string | undefined>(undefined);
+
+  const handleSyncTrafficPatternAI = async (selectedBranchId: string = 'ALL') => {
+    if (isSyncingTraffic || !report.branches || report.branches.length === 0) return;
+    setIsSyncingTraffic(true);
+    try {
+      const res = await fetch('/api/sync-traffic-pattern', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brandName: report.brandName,
+          branches: report.branches,
+          selectedBranchId,
+          provider: aiConfig.provider,
+          model: aiConfig.model,
+          apiKey: aiConfig.apiKey,
+          baseUrl: aiConfig.baseUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.trafficPattern) {
+        setReport((prev) => ({
+          ...prev,
+          trafficPattern: data.trafficPattern,
+        }));
+        setTrafficLastSyncedAt(data.lastCalculatedAt || new Date().toLocaleTimeString('id-ID'));
+      }
+    } catch (err: any) {
+      console.error('Error syncing traffic pattern:', err);
+    } finally {
+      setIsSyncingTraffic(false);
+    }
+  };
+
+  // Social Sentiment AI Sync State
+  const [isSyncingSocial, setIsSyncingSocial] = useState(false);
+  const [socialLastSyncedAt, setSocialLastSyncedAt] = useState<string | undefined>(undefined);
+
+  const handleSyncSocialSentimentAI = async () => {
+    if (isSyncingSocial || !report.branches || report.branches.length === 0) return;
+    setIsSyncingSocial(true);
+    try {
+      const res = await fetch('/api/sync-social-sentiment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brandName: report.brandName,
+          branches: report.branches,
+          provider: aiConfig.provider,
+          model: aiConfig.model,
+          apiKey: aiConfig.apiKey,
+          baseUrl: aiConfig.baseUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.socialSentiment) {
+        setReport((prev) => ({
+          ...prev,
+          socialSentiment: data.socialSentiment,
+        }));
+        setSocialLastSyncedAt(data.lastCalculatedAt || new Date().toLocaleTimeString('id-ID'));
+      }
+    } catch (err: any) {
+      console.error('Error syncing social sentiment:', err);
+    } finally {
+      setIsSyncingSocial(false);
+    }
+  };
+
+  // Strategic Recommendations AI Sync State
+  const [isSyncingRecommendations, setIsSyncingRecommendations] = useState(false);
+  const [recommendationsLastSyncedAt, setRecommendationsLastSyncedAt] = useState<string | undefined>(undefined);
+
+  const handleSyncStrategicRecommendationsAI = async () => {
+    if (isSyncingRecommendations || !report.branches || report.branches.length === 0) return;
+    setIsSyncingRecommendations(true);
+    try {
+      const res = await fetch('/api/sync-strategic-recommendations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brandName: report.brandName,
+          branches: report.branches,
+          complaintCategories: report.complaintCategories,
+          provider: aiConfig.provider,
+          model: aiConfig.model,
+          apiKey: aiConfig.apiKey,
+          baseUrl: aiConfig.baseUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.strategicRecommendations) {
+        setReport((prev) => ({
+          ...prev,
+          strategicRecommendations: data.strategicRecommendations,
+        }));
+        setRecommendationsLastSyncedAt(data.lastCalculatedAt || new Date().toLocaleTimeString('id-ID'));
+      }
+    } catch (err: any) {
+      console.error('Error syncing strategic recommendations:', err);
+    } finally {
+      setIsSyncingRecommendations(false);
+    }
+  };
+
+  const handleSyncHistoricalTrendsAI = async () => {
+    if (isSyncingHistorical || !report.branches || report.branches.length === 0) return;
+    setIsSyncingHistorical(true);
+    try {
+      const res = await fetch('/api/sync-historical-trends', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brandName: report.brandName,
+          branches: report.branches,
+          provider: aiConfig.provider,
+          model: aiConfig.model,
+          apiKey: aiConfig.apiKey,
+          baseUrl: aiConfig.baseUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.historicalAnalytics) {
+        setReport((prev) => ({
+          ...prev,
+          historicalAnalytics: data.historicalAnalytics,
+        }));
+      }
+    } catch (err: any) {
+      console.error('Error syncing historical trends:', err);
+    } finally {
+      setIsSyncingHistorical(false);
+    }
+  };
 
   const handleSyncBranchPerformanceAI = async () => {
     if (isSyncingPerformance || !report.branches || report.branches.length === 0) return;
@@ -679,19 +855,46 @@ export default function App() {
         />
 
         {/* Section 3: Tren Historis 6 Bulan & Proyeksi Kinerja */}
-        <HistoricalAnalyticsSection report={report} />
+        <HistoricalAnalyticsSection
+          report={report}
+          onSyncHistoricalAI={handleSyncHistoricalTrendsAI}
+          isSyncing={isSyncingHistorical}
+          aiConfig={aiConfig}
+          onOpenAISettings={() => setIsAISettingsOpen(true)}
+        />
 
         {/* Section 4: Deep Dive Categorization & Complaint Analysis */}
-        <ComplaintCategoriesChart categories={report.complaintCategories} />
+        <ComplaintCategoriesChart
+          categories={report.complaintCategories}
+          onSyncComplaintsAI={handleSyncComplaintCategoriesAI}
+          isSyncing={isSyncingComplaints}
+          lastSyncedAt={complaintsLastSyncedAt}
+        />
 
         {/* Section 5: Pattern Kedatangan & Tren Keramaian */}
-        <TrafficPatternSection pattern={report.trafficPattern} branches={report.branches} />
+        <TrafficPatternSection
+          pattern={report.trafficPattern}
+          branches={report.branches}
+          onSyncTrafficAI={handleSyncTrafficPatternAI}
+          isSyncing={isSyncingTraffic}
+          lastSyncedAt={trafficLastSyncedAt}
+        />
 
         {/* Section 6: Analisis Media Sosial & Persepse Publik */}
-        <SocialSentimentSection data={report.socialSentiment} />
+        <SocialSentimentSection
+          data={report.socialSentiment}
+          onSyncSocialAI={handleSyncSocialSentimentAI}
+          isSyncing={isSyncingSocial}
+          lastSyncedAt={socialLastSyncedAt}
+        />
 
         {/* Section 7: Rekomendasi Strategis Operasional */}
-        <StrategicRecommendationsSection recommendations={report.strategicRecommendations} />
+        <StrategicRecommendationsSection
+          recommendations={report.strategicRecommendations}
+          onSyncRecommendationsAI={handleSyncStrategicRecommendationsAI}
+          isSyncing={isSyncingRecommendations}
+          lastSyncedAt={recommendationsLastSyncedAt}
+        />
 
         {/* Grounding Sources Disclaimer Footer */}
         {report.groundingSources && report.groundingSources.length > 0 && (
@@ -745,7 +948,7 @@ export default function App() {
         <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
           <div className="min-w-[200px]">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Rekomendasi Strategis<br />Operasional Management</h3>
-            <p className="text-[11px] text-blue-600 mt-1">Astra Otoservice & Network Analytics</p>
+            <p className="text-[11px] text-blue-600 mt-1">{report.brandName} & Network Analytics</p>
           </div>
           <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-700">
             <div className="border-l-2 border-blue-500 pl-3">

@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from 'recharts';
-import { Clock, Calendar, Zap, CheckCircle2, Building, MapPin, Sparkles, Filter } from 'lucide-react';
+import { Clock, Calendar, Zap, CheckCircle2, Building, MapPin, Sparkles, RefreshCw } from 'lucide-react';
 import { TrafficPattern, BranchData } from '../types';
 
 interface TrafficPatternSectionProps {
   pattern: TrafficPattern;
   branches?: BranchData[];
+  onSyncTrafficAI?: (branchId?: string) => Promise<void>;
+  isSyncing?: boolean;
+  lastSyncedAt?: string;
 }
 
-export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pattern, branches = [] }) => {
+export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({
+  pattern,
+  branches = [],
+  onSyncTrafficAI,
+  isSyncing = false,
+  lastSyncedAt,
+}) => {
   const [selectedBranchId, setSelectedBranchId] = useState<string>('ALL');
 
   const selectedBranch = branches.find((b) => b.id === selectedBranchId);
@@ -30,7 +39,6 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
     let hourlyDistribution = [];
 
     if (bId.includes('merr-surabaya') || name.toLowerCase().includes('merr')) {
-      // Merr Surabaya: Peak at Lunch Time (11:30 - 14:00) & Evening (18:00 - 20:00)
       peakHours = "11.30 - 14.00 WIB & 18.00 - 20.00 WIB";
       quietHours = "Senin & Rabu (09.00 - 11.00 WIB)";
       busyDays = ["Sabtu", "Minggu", "Kamis SORE"];
@@ -50,7 +58,6 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
         { hour: "21:00", trafficLevel: 20, label: "Tutup Operasional" },
       ];
     } else if (bId.includes('bsd') || name.toLowerCase().includes('bsd')) {
-      // BSD: High Morning (09-11) & After Work Peak (17-19)
       peakHours = "09.30 - 11.30 WIB & 17.00 - 19.30 WIB (Sepulang Kerja)";
       quietHours = "Selasa & Kamis (12.30 - 14.30 WIB)";
       busyDays = ["Sabtu", "Jumat SORE", "Minggu"];
@@ -70,7 +77,6 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
         { hour: "21:00", trafficLevel: 18, label: "Tutup Operasional" },
       ];
     } else if (bId.includes('karawaci') || name.toLowerCase().includes('karawaci')) {
-      // Karawaci: Afternoon & Evening Peak (15:00 - 19:30)
       peakHours = "15.00 - 19.30 WIB (Sore - Malam)";
       quietHours = "Rabu & Kamis (09.00 - 11.30 WIB)";
       busyDays = ["Sabtu", "Minggu", "Jumat"];
@@ -89,102 +95,7 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
         { hour: "20:00", trafficLevel: 48, label: "Penutupan Kasir" },
         { hour: "21:00", trafficLevel: 22, label: "Tutup Operasional" },
       ];
-    } else if (bId.includes('bquik') || bId.includes('b-quik') || name.toLowerCase().includes('b-quik') || name.toLowerCase().includes('bquik')) {
-      // B-Quik Indonesia: Buka Setiap Hari Pukul 08.00 hingga 21.00 WIB
-      peakHours = "09.30 - 12.00 WIB & 16.30 - 19.30 WIB (Setiap Hari 08.00 - 21.00 WIB)";
-      quietHours = "Senin & Selasa (13.00 - 15.00 WIB)";
-      busyDays = ["Sabtu", "Minggu", "Jumat SORE"];
-      hourlyDistribution = [
-        { hour: "08:00", trafficLevel: 48, label: "Buka Toko B-Quik (08.00 WIB)" },
-        { hour: "09:00", trafficLevel: 72, label: "Gelombang Pagi B-Quik" },
-        { hour: "10:00", trafficLevel: 94, label: "Puncak Pagi 30-Titik Pengecekan" },
-        { hour: "11:00", trafficLevel: 88, label: "Kapasitas Maksimal" },
-        { hour: "12:00", trafficLevel: 45, label: "Istirahat Siang" },
-        { hour: "13:00", trafficLevel: 60, label: "Gelombang Siang" },
-        { hour: "14:00", trafficLevel: 68, label: "Sedang" },
-        { hour: "15:00", trafficLevel: 75, label: "Persiapan Sore" },
-        { hour: "16:00", trafficLevel: 86, label: "Awal Sepulang Kerja" },
-        { hour: "17:00", trafficLevel: 98, label: "Puncak Pulang Kerja & Garansi Ban" },
-        { hour: "18:00", trafficLevel: 92, label: "Kapasitas Maksimal B-Quik" },
-        { hour: "19:00", trafficLevel: 72, label: "Servis Malam Express" },
-        { hour: "20:00", trafficLevel: 42, label: "Penutupan Kasir" },
-        { hour: "21:00", trafficLevel: 18, label: "Tutup Operasional B-Quik" },
-      ];
-    } else if (bId.includes('astra') || name.toLowerCase().includes('astra')) {
-      // Astra Otoservice: Buka Setiap Hari Pukul 08.00 - 18.00 WIB
-      peakHours = "08.30 - 11.30 WIB & 13.30 - 15.30 WIB (08.00 - 18.00 WIB)";
-      quietHours = "Selasa & Rabu (08.00 - 10.00 WIB)";
-      busyDays = ["Sabtu (Peak Utama)", "Minggu", "Jumat SORE"];
-      hourlyDistribution = [
-        { hour: "08:00", trafficLevel: 45, label: "Mulai Buka (08.00 WIB)" },
-        { hour: "09:00", trafficLevel: 92, label: "Puncak Kedatangan Pagi" },
-        { hour: "10:00", trafficLevel: 98, label: "Kapasitas Maksimal Pit" },
-        { hour: "11:00", trafficLevel: 85, label: "Padat Pagi" },
-        { hour: "12:00", trafficLevel: 60, label: "Istirahat Makan Siang" },
-        { hour: "13:00", trafficLevel: 80, label: "Gelombang II" },
-        { hour: "14:00", trafficLevel: 88, label: "Padat Siang" },
-        { hour: "15:00", trafficLevel: 70, label: "Sedang Sore" },
-        { hour: "16:00", trafficLevel: 55, label: "Penurunan Kunjungan" },
-        { hour: "17:00", trafficLevel: 35, label: "Persiapan Tutup" },
-        { hour: "18:00", trafficLevel: 15, label: "Tutup Operasional Astra (18.00 WIB)" },
-      ];
-    } else if (bId.includes('shop') || name.toLowerCase().includes('shop')) {
-      // Shop & Drive: Buka Setiap Hari Pukul 08.00 - 18.00 WIB
-      peakHours = "08.00 - 11.00 WIB & 15.30 - 17.30 WIB (08.00 - 18.00 WIB)";
-      quietHours = "Rabu & Kamis (11.00 - 14.00 WIB)";
-      busyDays = ["Sabtu", "Minggu", "Senin PAGI (Aki Mogok)"];
-      hourlyDistribution = [
-        { hour: "08:00", trafficLevel: 88, label: "Puncak Pagi Call Center Aki (08.00 WIB)" },
-        { hour: "09:00", trafficLevel: 78, label: "Pemeriksaan Aki & Oli" },
-        { hour: "10:00", trafficLevel: 72, label: "Sedang Pagi" },
-        { hour: "11:00", trafficLevel: 58, label: "Lancar" },
-        { hour: "12:00", trafficLevel: 42, label: "Istirahat Siang" },
-        { hour: "13:00", trafficLevel: 55, label: "Gelombang Siang" },
-        { hour: "14:00", trafficLevel: 65, label: "Sedang Siang" },
-        { hour: "15:00", trafficLevel: 82, label: "Gelombang Sore" },
-        { hour: "16:00", trafficLevel: 94, label: "Puncak Pulang Kerja" },
-        { hour: "17:00", trafficLevel: 88, label: "Padat Sore" },
-        { hour: "18:00", trafficLevel: 25, label: "Tutup Operasional Outlet (18.00 WIB)" },
-      ];
-    } else if (bId.includes('bos') || name.toLowerCase().includes('bos')) {
-      // Bengkel BOS: Buka Setiap Hari Pukul 08.00 - 17.00 WIB
-      peakHours = "09.00 - 12.00 WIB & 14.00 - 16.30 WIB (08.00 - 17.00 WIB)";
-      quietHours = "Selasa & Rabu (12.00 - 13.30 WIB)";
-      busyDays = ["Sabtu", "Minggu", "Jumat"];
-      hourlyDistribution = [
-        { hour: "08:00", trafficLevel: 40, label: "Buka Toko BOS (08.00 WIB)" },
-        { hour: "09:00", trafficLevel: 85, label: "Gelombang Pagi" },
-        { hour: "10:00", trafficLevel: 95, label: "Puncak Spooring & Cuci Mobil" },
-        { hour: "11:00", trafficLevel: 90, label: "Kapasitas Maksimal" },
-        { hour: "12:00", trafficLevel: 50, label: "Istirahat Siang" },
-        { hour: "13:00", trafficLevel: 72, label: "Sedang Siang" },
-        { hour: "14:00", trafficLevel: 88, label: "Gelombang Sore BOS" },
-        { hour: "15:00", trafficLevel: 92, label: "Puncak Sore" },
-        { hour: "16:00", trafficLevel: 70, label: "Penutupan Pendaftaran" },
-        { hour: "17:00", trafficLevel: 20, label: "Tutup Operasional BOS (17.00 WIB)" },
-      ];
-    } else if (bId.includes('cipondoh') || name.toLowerCase().includes('cipondoh')) {
-      // Cipondoh: Morning Heavy Peak (09:00 - 12:30)
-      peakHours = "09.00 - 12.30 WIB (Pagi Hari)";
-      quietHours = "Senin & Selasa (15.00 - 17.00 WIB)";
-      busyDays = ["Sabtu", "Minggu", "Senin PAGI"];
-      hourlyDistribution = [
-        { hour: "09:00", trafficLevel: 85, label: "Buka Langsung Padat" },
-        { hour: "10:00", trafficLevel: 98, label: "Puncak Pagi Cipondoh" },
-        { hour: "11:00", trafficLevel: 94, label: "Kapasitas Maksimal" },
-        { hour: "12:00", trafficLevel: 70, label: "Istirahat Siang" },
-        { hour: "13:00", trafficLevel: 65, label: "Sedang" },
-        { hour: "14:00", trafficLevel: 58, label: "Sedang" },
-        { hour: "15:00", trafficLevel: 45, label: "Longgar" },
-        { hour: "16:00", trafficLevel: 52, label: "Sedang" },
-        { hour: "17:00", trafficLevel: 78, label: "Gelombang Sore" },
-        { hour: "18:00", trafficLevel: 74, label: "Sedang Malam" },
-        { hour: "19:00", trafficLevel: 60, label: "Servis Malam" },
-        { hour: "20:00", trafficLevel: 35, label: "Penutupan Kasir" },
-        { hour: "21:00", trafficLevel: 15, label: "Tutup Operasional" },
-      ];
     } else {
-      // Generic Hash-derived unique distribution for any other branch
       let charSum = 0;
       for (let i = 0; i < bId.length; i++) charSum += bId.charCodeAt(i);
 
@@ -237,52 +148,75 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
   const endHourStr = lastHourLabel.replace(":", ".");
 
   return (
-    <section className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 mb-8">
+    <section className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 mb-8 transition-all hover:shadow-2xl" id="tren-keramaian">
       
-      {/* Section Header */}
+      {/* Section Header & Actions */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="w-3 h-3 rounded-full bg-indigo-600 animate-pulse"></span>
             <h3 className="text-xl font-bold text-slate-900 tracking-tight">
               5. Pattern Kedatangan & Tren Keramaian (Footfall Analysis)
             </h3>
-            {currentPattern.isSpecificBranch ? (
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 text-[11px] font-extrabold border border-emerald-500/40 flex items-center gap-1">
+            {lastSyncedAt ? (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Terverifikasi Google Footfall & AI
+              </span>
+            ) : currentPattern.isSpecificBranch ? (
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-extrabold border border-emerald-300 flex items-center gap-1">
                 <MapPin className="w-3 h-3 text-emerald-600" /> Cabang: {currentPattern.branchName}
               </span>
             ) : (
-              <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-700 text-[11px] font-extrabold border border-blue-500/40 flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[11px] font-extrabold border border-blue-300 flex items-center gap-1">
                 🌐 Seluruh Cabang ({branches.length || 31} Outlet)
               </span>
             )}
+            {lastSyncedAt && (
+              <span className="text-[11px] text-slate-500 font-medium">
+                (Sinkronisasi: {lastSyncedAt})
+              </span>
+            )}
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-600 mt-1">
             Analisis pola waktu tersibuk (peak hours), hari paling ramai, dan indikasi penumpukan beban kerja operasional.
           </p>
         </div>
 
-        {/* Store Selection Dropdown Filter */}
-        {branches.length > 0 && (
-          <div className="flex items-center gap-2.5 bg-slate-100 p-2 rounded-xl border border-slate-200 shrink-0">
-            <div className="flex items-center gap-1.5 text-amber-600 font-bold text-xs pl-1">
-              <Building className="w-4 h-4" />
-              <span>Pilih Toko / Cabang:</span>
+        {/* Right Toolbar: Branch Dropdown & Sync Button */}
+        <div className="flex flex-wrap items-center gap-3">
+          {branches.length > 0 && (
+            <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-300 shrink-0">
+              <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs pl-1.5">
+                <Building className="w-3.5 h-3.5 text-amber-600" />
+                <span>Toko:</span>
+              </div>
+              <select
+                value={selectedBranchId}
+                onChange={(e) => setSelectedBranchId(e.target.value)}
+                className="bg-white border border-slate-300 text-slate-900 font-bold text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer max-w-[260px] truncate shadow-2xs"
+              >
+                <option value="ALL">🌐 Seluruh Cabang (Konsolidasi — {branches.length} Toko)</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    📍 {b.name} ({b.city}) — {b.rating.toFixed(1)} ⭐
+                  </option>
+                ))}
+              </select>
             </div>
-            <select
-              value={selectedBranchId}
-              onChange={(e) => setSelectedBranchId(e.target.value)}
-              className="bg-white border border-slate-300 text-slate-900 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer max-w-[280px] truncate"
+          )}
+
+          {onSyncTrafficAI && (
+            <button
+              onClick={() => onSyncTrafficAI(selectedBranchId)}
+              disabled={isSyncing}
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 rounded-xl shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              title="Perbarui model estimasi Popular Times dan rekomendasi jam sibuk dari AI"
             >
-              <option value="ALL">🌐 Seluruh Cabang (Konsolidasi Jaringan — {branches.length} Toko)</option>
-              {branches.map((b) => (
-                <option key={b.id} value={b.id}>
-                  📍 {b.name} ({b.city}) — {b.rating.toFixed(1)} ⭐
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+              {isSyncing ? 'Menganalisis Footfall AI...' : 'Sinkronkan Pola Kedatangan AI'}
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -291,8 +225,8 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
         <div className="lg:col-span-5 space-y-4">
           
           {/* Busy Days Card */}
-          <div className="p-4 rounded-xl bg-indigo-100/40 border border-indigo-500/30">
-            <div className="flex items-center gap-2 text-indigo-700 mb-2">
+          <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200">
+            <div className="flex items-center gap-2 text-indigo-800 mb-2">
               <Calendar className="w-4 h-4 text-indigo-600 shrink-0" />
               <h4 className="font-bold text-xs uppercase tracking-wider">
                 Hari Paling Ramai (Peak Days)
@@ -300,7 +234,7 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
             </div>
             <div className="flex flex-wrap gap-1.5 mt-2">
               {currentPattern.busyDays.map((day, i) => (
-                <span key={i} className="px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs shadow-2xs">
+                <span key={i} className="px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs shadow-xs">
                   {day}
                 </span>
               ))}
@@ -308,41 +242,41 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
           </div>
 
           {/* Peak Hours Card */}
-          <div className="p-4 rounded-xl bg-amber-100/40 border border-amber-500/30">
-            <div className="flex items-center gap-2 text-amber-700 mb-2">
+          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200">
+            <div className="flex items-center gap-2 text-amber-800 mb-2">
               <Clock className="w-4 h-4 text-amber-600 shrink-0" />
               <h4 className="font-bold text-xs uppercase tracking-wider">
                 Jam Tersibuk (Peak Hours)
               </h4>
             </div>
-            <p className="text-base font-extrabold text-amber-800">
+            <p className="text-base font-extrabold text-amber-900">
               {currentPattern.peakHours}
             </p>
-            <p className="text-xs text-amber-600/90 mt-1">
-              Waktu Paling Longgar: <span className="font-semibold text-amber-800">{currentPattern.quietHours}</span>
+            <p className="text-xs text-amber-800 mt-1">
+              Waktu Paling Longgar: <span className="font-bold text-amber-900">{currentPattern.quietHours}</span>
             </p>
           </div>
 
           {/* Traffic Narrative Summary */}
-          <div className="p-4 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 text-xs leading-relaxed">
-            <p className="font-bold text-amber-600 mb-1 flex items-center gap-1.5">
+          <div className="p-4 rounded-xl bg-slate-50 text-slate-800 border border-slate-200 text-xs leading-relaxed">
+            <p className="font-bold text-indigo-700 mb-1.5 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-600" /> Temuan Pola Kunjungan:
             </p>
-            <p className="text-slate-700">
+            <p className="text-slate-700 font-normal leading-relaxed">
               {currentPattern.summary}
             </p>
           </div>
 
           {/* Quick Recommendations */}
           {currentPattern.recommendations && currentPattern.recommendations.length > 0 && (
-            <div className="p-4 rounded-xl bg-slate-100/80 border border-slate-200 text-xs space-y-2">
+            <div className="p-4 rounded-xl bg-slate-50/90 border border-slate-200 text-xs space-y-2">
               <h5 className="font-bold text-slate-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-blue-600" /> Mitigasi Penumpukan Jam Sibuk:
               </h5>
               {currentPattern.recommendations.map((rec, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-slate-700">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>{rec}</span>
+                  <span className="font-medium">{rec}</span>
                 </div>
               ))}
             </div>
@@ -351,13 +285,13 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
         </div>
 
         {/* Right Side: Hourly Traffic Bar Chart (7 cols) */}
-        <div className="lg:col-span-7 bg-slate-100 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-slate-50/90 p-5 rounded-2xl border border-slate-200 flex flex-col justify-between">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
               <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Grafik Keramaian Unit per Jam ({startHourStr} - {endHourStr} WIB)
               </h4>
-              <div className="flex items-center gap-3 text-[11px] text-slate-700">
+              <div className="flex items-center gap-3 text-[11px] text-slate-700 font-semibold">
                 <span className="flex items-center gap-1">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Normal
                 </span>
@@ -373,15 +307,15 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={currentPattern.hourlyDistribution} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
-                  <XAxis dataKey="hour" tick={{ fontSize: 11, fill: '#94a3b8' }} />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="hour" tick={{ fontSize: 11, fill: '#64748b' }} />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#64748b' }} />
                   <Tooltip
-                    formatter={(value: any, name: any, item: any) => [
+                    formatter={(value: any, _name: any, item: any) => [
                       `${value}% Kepadatan (${item.payload.label})`,
                       'Tingkat Keramaian'
                     ]}
-                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', color: '#fff', fontSize: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)' }}
                   />
                   <Bar dataKey="trafficLevel" radius={[6, 6, 0, 0]}>
                     {currentPattern.hourlyDistribution.map((entry, index) => {
@@ -401,12 +335,12 @@ export const TrafficPatternSection: React.FC<TrafficPatternSectionProps> = ({ pa
               <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <strong>Metodologi Sumber Data:</strong> Aggregated Sinyal GPS Google Maps Popular Times berbasis Place ID Koordinat Fisik Cabang
             </span>
-            <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100/60 px-2.5 py-0.5 rounded border border-emerald-500/40">
+            <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded border border-emerald-300">
               Akurasi Pola Kedatangan: ±85-95%
             </span>
           </div>
           
-          <p className="text-[10px] text-slate-500 text-center mt-1">
+          <p className="text-[10px] text-slate-400 text-center mt-1">
             * Indikator 100% merepresentasikan kapasitas maksimal pit pengerjaan & ruang tunggu cabang secara bersamaan.
           </p>
         </div>
